@@ -6,17 +6,17 @@
     <title>Hosszú távú előrejelzés - Nyíregyháza</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
     <style>
         :root {
-            /* Színpaletta Alapok */
-            --accent-interactive-night: #00BFFF;
-            --text-primary-night: #EAEAEA;
-            --text-secondary-night: #A0B0C0;
-            --bg-widget-night: rgba(15, 23, 42, 0.88);
-            --border-widget-night: rgba(56, 189, 248, 0.2);
-            --bg-header-night: rgba(25, 33, 52, 0.9);
+            /* === "AURORA GLASS" TÉMA === */
+            --accent-interactive-night: #2dd4bf; 
+            --text-primary-night: #F3F4F6;
+            --text-secondary-night: #9CA3AF;
+            --bg-widget-night: rgba(29, 21, 58, 0.55);
+            --border-widget-night: rgba(45, 212, 191, 0.3);
+            --bg-header-night: rgba(29, 21, 58, 0.7);
 
+            /* Nappali téma */
             --accent-interactive-day: #007AFF;
             --text-primary-day: #111827;
             --text-secondary-day: #4B5563;
@@ -24,33 +24,13 @@
             --border-widget-day: rgba(0, 122, 255, 0.18);
             --bg-header-day: rgba(245, 250, 255, 0.95);
 
-            /* 12 FÁZISÚ CIKLUS DEFINÍCIÓJA */
-            --sky-color-top-night: #0B1120;
-            --sky-color-bottom-night: #020617;
-            --sky-color-top-early-dawn: #020617;
-            --sky-color-bottom-early-dawn: #0f172a;
-            --sky-color-top-blue-hour-dawn: #0f172a;
-            --sky-color-bottom-blue-hour-dawn: #1e3a8a;
-            --sky-color-top-dawn: #1e293b;
-            --sky-color-bottom-dawn: #f97316;
-            --sky-color-top-sunrise: #fef3c7;
-            --sky-color-bottom-sunrise: #fb923c;
-            --sky-color-top-golden-hour-rise: #fde68a;
-            --sky-color-bottom-golden-hour-rise: #fca5a5;
+            /* Háttérgradiensek */
+            --sky-color-top-night: #0a0215;
+            --sky-color-bottom-night: #1d0f3b;
             --sky-color-top-day: #7DD3FC;
             --sky-color-bottom-day: #C4EFFF;
-            --sky-color-top-golden-hour-set: #fbbf24;
-            --sky-color-bottom-golden-hour-set: #f87171;
-            --sky-color-top-sunset: #f97316;
-            --sky-color-bottom-sunset: #dc2626;
-            --sky-color-top-dusk: #0369a1;
-            --sky-color-bottom-dusk: #4c1d95;
-            --sky-color-top-blue-hour-dusk: #1e3a8a;
-            --sky-color-bottom-blue-hour-dusk: #312e81;
-            --sky-color-top-late-dusk: #111827;
-            --sky-color-bottom-late-dusk: #0c0a09;
             
-            /* Aktuális Téma (kezdetben éjszakai) */
+            /* Aktuális Téma */
             --current-sky-color-top: var(--sky-color-top-night);
             --current-sky-color-bottom: var(--sky-color-bottom-night);
             --current-text-color: var(--text-primary-night);
@@ -62,61 +42,88 @@
             --current-bg-header: var(--bg-header-night);
         }
 
-        body { font-family: 'Inter', sans-serif; font-weight: 500; background-color: #020617; min-height: 100vh; margin: 0; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; text-align: center; padding: 20px; box-sizing: border-box; position: relative; overflow-x: hidden; transition: background-color 1.5s ease-in-out; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            font-weight: 500; 
+            background-color: #0a0215; 
+            min-height: 100vh; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-start; 
+            align-items: center; 
+            text-align: center; 
+            padding: 20px; 
+            box-sizing: border-box; 
+            position: relative; 
+            overflow-x: hidden; 
+        }
         
-        body[data-theme="day"] { --current-sky-color-top: var(--sky-color-top-day); --current-sky-color-bottom: var(--sky-color-bottom-day); --current-text-color: var(--text-primary-day); --current-text-muted-color: var(--text-secondary-day); --current-icon-color: var(--accent-interactive-day); --current-widget-bg: var(--bg-widget-day); --current-widget-border: var(--border-widget-day); --current-container-border-color: rgba(203, 213, 225, 0.55); --current-bg-header: var(--bg-header-day); }
-        body[data-theme="dawn"] { --current-sky-color-top: var(--sky-color-top-dawn); --current-sky-color-bottom: var(--sky-color-bottom-dawn); --current-text-color: var(--text-primary-night); --current-text-muted-color: var(--text-secondary-night); --current-icon-color: #f59e0b; --current-widget-bg: var(--bg-widget-night); --current-widget-border: rgba(245, 158, 11, 0.3); --current-container-border-color: rgba(71, 85, 105, 0.5); --current-bg-header: var(--bg-header-night); }
-        body[data-theme="dusk"] { --current-sky-color-top: var(--sky-color-top-dusk); --current-sky-color-bottom: var(--sky-color-bottom-dusk); --current-text-color: var(--text-primary-night); --current-text-muted-color: var(--text-secondary-night); --current-icon-color: #f472b6; --current-widget-bg: var(--bg-widget-night); --current-widget-border: rgba(236, 72, 153, 0.3); --current-container-border-color: rgba(71, 85, 105, 0.5); --current-bg-header: var(--bg-header-night); }
-        body[data-theme="early_dawn"], body[data-theme="blue_hour_dawn"], body[data-theme="blue_hour_dusk"], body[data-theme="late_dusk"] { --current-bg-header: var(--bg-header-night); }
-        body[data-theme="sunrise"], body[data-theme="golden_hour_rise"], body[data-theme="golden_hour_set"], body[data-theme="sunset"] { --current-bg-header: var(--bg-header-day); }
+        body[data-theme="day"] { 
+            --current-sky-color-top: var(--sky-color-top-day); 
+            --current-sky-color-bottom: var(--sky-color-bottom-day); 
+            --current-text-color: var(--text-primary-day); 
+            --current-text-muted-color: var(--text-secondary-day); 
+            --current-icon-color: var(--accent-interactive-day); 
+            --current-widget-bg: var(--bg-widget-day); 
+            --current-widget-border: var(--border-widget-day); 
+            --current-container-border-color: rgba(203, 213, 225, 0.55); 
+            --current-bg-header: var(--bg-header-day); 
+        }
 
-        .sky-gradient-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, var(--current-sky-color-top), var(--current-sky-color-bottom)); transition: background 2s ease-in-out; z-index: -1; }
+        .sky-gradient-overlay { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: linear-gradient(to bottom, var(--current-sky-color-top), var(--current-sky-color-bottom)); 
+            transition: background 2s ease-in-out; 
+            z-index: -1; 
+        }
         
-        .main-container { width: 100%; max-width: 1600px; margin: 20px auto; color: var(--current-text-color); transition: color 0.6s ease-in-out; }
+        .main-container { 
+            width: 100%; 
+            max-width: 1600px; 
+            margin: 20px auto; 
+            color: var(--current-text-color); 
+            transition: color 0.6s ease-in-out; 
+        }
 
-        /* === ÚJ: VEZÉRLŐPULT CSOMAGOLÓ === */
         .header-wrapper {
             width: 100%;
             display: flex;
-            justify-content: flex-start; /* Alapértelmezett igazítás: BALRA */
+            justify-content: flex-start;
             margin-bottom: 24px;
         }
-        /* =============================== */
         
         .header-controls {
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 16px;
+            justify-content: space-between;
+            gap: 24px;
             width: auto;
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: var(--current-bg-header);
             border: 1px solid var(--current-widget-border);
-            border-radius: 16px;
-            backdrop-filter: blur(14px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             transition: all 0.4s ease-in-out;
         }
-        .header-title {
-            font-size: 18px;
-            font-weight: 600;
+
+        .location-details {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .location-details h1 {
+            font-size: 20px;
+            font-weight: 700;
             color: var(--current-text-color);
             margin: 0;
             white-space: nowrap;
         }
-        #week-selector {
-            background-color: transparent;
-            color: var(--current-text-color);
-            border: 1px solid var(--current-widget-border);
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-family: 'Inter', sans-serif;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .last-updated {
+        .location-details .date-range, .location-details .last-updated {
             font-size: 14px;
             font-weight: 500;
             color: var(--current-text-muted-color);
@@ -124,48 +131,117 @@
             white-space: nowrap;
         }
 
-        .forecast-container { width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; margin: 0 auto; }
-        @keyframes card-entry { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+        #week-selector {
+            background-color: transparent;
+            color: var(--current-text-color);
+            border: 1px solid var(--current-widget-border);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #week-selector:hover {
+            border-color: var(--current-icon-color);
+            background-color: rgba(45, 212, 191, 0.1);
+        }
+
+        .forecast-container { 
+            width: 100%; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); 
+            gap: 18px; 
+            margin: 0 auto; 
+        }
+        @keyframes card-entry { 
+            from { opacity: 0; transform: translateY(25px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
         .loading-message { font-size: 18px; padding: 40px; grid-column: 1 / -1; }
-        .forecast-day-card { display: flex; flex-direction: column; padding: 12px; border-radius: 12px; background: var(--current-widget-bg); border: 1px solid var(--current-widget-border); box-shadow: 0 4px 15px rgba(0,0,0,0.15); color: var(--current-text-color); transition: all 0.4s ease-in-out; backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); overflow: hidden; border-top: 5px solid var(--temp-color, var(--current-icon-color)); opacity: 0; animation: card-entry 0.6s ease-out forwards; animation-delay: calc(var(--day-index) * 70ms); }
-        .forecast-day-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 10px 25px rgba(0,0,0,0.25); border-color: var(--current-container-border-color); }
         
-        .forecast-day-card.today { border: 2px solid var(--current-icon-color); transform: scale(1.04); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
-        .forecast-day-card.tomorrow { border-top-width: 5px; border-left: 1px solid var(--current-container-border-color); border-right: 1px solid var(--current-container-border-color); border-bottom: 1px solid var(--current-container-border-color); }
-        .forecast-day-card.today .forecast-day-name, .forecast-day-card.tomorrow .forecast-day-name { font-size: 18px; color: var(--current-icon-color); }
+        .forecast-day-card { 
+            display: flex; 
+            flex-direction: column; 
+            padding: 16px; 
+            border-radius: 18px; 
+            background: var(--current-widget-bg); 
+            border: 1px solid var(--current-widget-border); 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+            color: var(--current-text-color); 
+            transition: all 0.4s ease-in-out; 
+            backdrop-filter: blur(20px) saturate(180%); 
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-top: 6px solid var(--temp-color, var(--current-icon-color)); 
+            opacity: 0; 
+            animation: card-entry 0.6s ease-out forwards; 
+            animation-delay: calc(var(--day-index) * 70ms); 
+        }
+        .forecast-day-card:hover { 
+            transform: translateY(-8px) scale(1.03); 
+            box-shadow: 0 12px 40px rgba(0,0,0,0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.1); 
+            border-color: var(--current-icon-color);
+        }
+        
+        .forecast-day-card.today { 
+            transform: scale(1.05);
+            border: 2px solid var(--current-icon-color);
+            border-top-width: 6px;
+        }
+        .forecast-day-card.today .forecast-day-name, .forecast-day-card.tomorrow .forecast-day-name { font-size: 19px; font-weight: 800; color: var(--current-icon-color); }
 
-        .forecast-header { text-align: center; margin-bottom: 8px; }
-        .forecast-day-name { font-size: 16px; font-weight: 700; transition: all 0.3s; }
-        .forecast-date { font-size: 12px; font-weight: 500; color: var(--current-text-muted-color); }
-        .forecast-temps { font-size: 26px; font-weight: 800; display: flex; justify-content: center; align-items: baseline; gap: 12px; padding: 10px 0; border-top: 1px solid var(--current-container-border-color); border-bottom: 1px solid var(--current-container-border-color); margin: 8px 0; transition: border-color 0.6s; }
-        .forecast-temp-min { font-size: 0.7em; color: var(--current-text-muted-color); font-weight: 500; }
-        .forecast-part { margin-top: 8px; flex-grow: 1; }
-        .forecast-part:first-of-type { padding-bottom: 8px; border-bottom: 1px solid var(--current-container-border-color); transition: border-color 0.6s; }
-        .forecast-part-header { display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; margin-bottom: 5px; }
-        .forecast-part-header i { font-size: 1.2em; margin-right: 6px; opacity: 0.9; color: var(--current-icon-color); transition: color 0.6s; width: 20px; text-align: center; }
-        .forecast-part-details { font-size: 12px; color: var(--current-text-muted-color); line-height: 1.5; text-align: center; }
-        .forecast-part-details p { margin: 3px 0; }
+        .forecast-header { text-align: center; margin-bottom: 10px; }
+        .forecast-day-name { font-size: 17px; font-weight: 700; }
+        .forecast-date { font-size: 13px; font-weight: 500; color: var(--current-text-muted-color); }
+        .forecast-temps { font-size: 28px; font-weight: 800; display: flex; justify-content: center; align-items: baseline; gap: 14px; padding: 12px 0; border-top: 1px solid var(--current-container-border-color); margin: 10px 0 0 0; }
+        .forecast-temp-min { font-size: 0.65em; color: var(--current-text-muted-color); font-weight: 500; }
+        
+        .forecast-sun-details {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--current-text-muted-color);
+            padding: 8px 0;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--current-container-border-color);
+        }
+        .forecast-sun-details > span {
+            display: flex;
+            align-items: center;
+        }
+        .icon-combo {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 8px;
+        }
+        .icon-sunrise { color: #facc15; }
+        .icon-sunset { color: #f97316; }
+        .icon-arrow {
+            font-size: 0.7em;
+            margin-left: -5px;
+            position: relative;
+            color: #ffffff;
+            text-shadow: 0 0 3px rgba(0,0,0,0.5);
+        }
+        .icon-arrow.up { top: -3px; }
+        .icon-arrow.down { top: 3px; }
 
-        footer { margin-top: 40px; }
-        footer a { color: var(--current-text-muted-color); text-decoration: none; font-weight: 600; padding: 10px 20px; border-radius: 10px; background-color: var(--current-widget-bg); border: 1px solid var(--current-widget-border); transition: all 0.3s ease; backdrop-filter: blur(10px); }
-        footer a:hover { color: var(--current-text-color); background-color: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
+        .forecast-part { margin-top: 10px; flex-grow: 1; }
+        .forecast-part:first-of-type { padding-bottom: 10px; border-bottom: 1px solid var(--current-container-border-color); }
+        .forecast-part-header { display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .forecast-part-header i { font-size: 1.3em; margin-right: 8px; color: var(--current-icon-color); width: 22px; text-align: center; }
+        .forecast-part-details { font-size: 13px; color: var(--current-text-muted-color); line-height: 1.6; text-align: center; }
+        .forecast-part-details p { margin: 4px 0; }
+        .forecast-part-details p i { vertical-align: middle; }
 
         @media (max-width: 768px) {
-            .header-wrapper {
-                justify-content: center; /* Mobilon középre igazítjuk a panelt */
-            }
-            .header-controls {
-                display: flex;
-                flex-wrap: wrap;
-                width: 95%;
-                justify-content: center;
-                row-gap: 10px;
-            }
-            .header-title {
-                width: 100%;
-                text-align: center;
-            }
-            .forecast-container { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+            .header-wrapper { justify-content: center; }
+            .header-controls { flex-direction: column; width: 95%; gap: 15px; }
+            .location-details { text-align: center; }
+            .forecast-container { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
         }
     </style>
 </head>
@@ -173,22 +249,20 @@
     <div class="sky-gradient-overlay"></div>
 
     <div class="main-container">
-        <!-- === MÓDOSÍTOTT VEZÉRLŐPULT ELHELYEZÉS === -->
         <div class="header-wrapper">
             <div class="header-controls">
-                <p class="header-title">Nyíregyháza időjárása</p>
+                <div class="location-details">
+                    <h1>Nyíregyháza időjárása</h1>
+                    <p class="date-range" id="date-range-display">Betöltés...</p>
+                    <p class="last-updated" id="last-updated-time">Frissítés...</p>
+                </div>
                 <select id="week-selector" aria-label="Válasszon időszakot"></select>
-                <p id="last-updated-time" class="last-updated"></p>
             </div>
         </div>
         
         <div class="forecast-container" id="forecast-container">
             <div class="loading-message">Előrejelzés betöltése...</div>
         </div>
-        
-        <footer>
-            <a href="index.html">Vissza a főoldalra</a>
-        </footer>
     </div>
     
     <script>
@@ -200,14 +274,18 @@
 
         function formatLastUpdated(date) {
             const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            const timeString = new Intl.DateTimeFormat('hu-HU', options).format(date);
-            return `Frissítve: ${timeString}`;
+            return `Frissítve: ${new Intl.DateTimeFormat('hu-HU', options).format(date)}`;
         }
 
         function formatValue(value, unit = '', precision = 1, notAvailableString = NO_DATA_STRING) {
             if (value === null || typeof value === 'undefined' || (typeof value === 'number' && isNaN(value))) return notAvailableString;
             if (typeof value === 'number') return `${value.toFixed(precision)}${unit}`;
             return `${value}${unit}`;
+        }
+        
+        function formatPrecipitation(value) {
+            if (value === null || typeof value === 'undefined' || isNaN(value)) return '0 mm';
+            return `${value.toFixed(1)} mm`;
         }
 
         function formatForecastDate(isoDateString) {
@@ -217,6 +295,15 @@
                 const options = { month: 'short', day: 'numeric' };
                 return new Intl.DateTimeFormat('hu-HU', options).format(date);
             } catch (e) { return ''; }
+        }
+
+        function formatTime(isoDateString) {
+            if (!isoDateString) return NO_DATA_STRING;
+            try {
+                const date = new Date(isoDateString);
+                const options = { hour: '2-digit', minute: '2-digit', hour12: false };
+                return new Intl.DateTimeFormat('hu-HU', options).format(date);
+            } catch (e) { return NO_DATA_STRING; }
         }
         
         function degreesToCompass(degrees) {
@@ -232,21 +319,9 @@
             return iconMap[iconCode] || 'fas fa-question-circle';
         }
 
-        function updateThemeAndSky(currentTime, sunriseTimeIso, sunsetTimeIso) {
+        function updateThemeAndSky() {
             const fallbackTheme = (new Date().getHours() >= 7 && new Date().getHours() < 18) ? 'day' : 'night';
-            let theme = fallbackTheme;
-            if (sunriseTimeIso && sunsetTimeIso) {
-                try {
-                    const nowMs = currentTime.getTime(); const sunriseDate = new Date(sunriseTimeIso); const sunsetDate = new Date(sunsetTimeIso);
-                    if (isNaN(sunriseDate.getTime()) || isNaN(sunsetDate.getTime())) { throw new Error("Invalid sunrise/sunset date"); }
-                    const DURATION_30_MIN = 30 * 60 * 1000; const DURATION_25_MIN = 25 * 60 * 1000; const DURATION_15_MIN = 15 * 60 * 1000; const DURATION_45_MIN = 45 * 60 * 1000;
-                    const sunriseMs = sunriseDate.getTime(); const sunsetMs = sunsetDate.getTime();
-                    const earlyDawnStart = sunriseMs - DURATION_25_MIN - DURATION_30_MIN - DURATION_30_MIN; const blueHourDawnStart = sunriseMs - DURATION_25_MIN - DURATION_30_MIN; const dawnStart = sunriseMs - DURATION_25_MIN; const sunriseEnd = sunriseMs + DURATION_15_MIN; const goldenHourRiseEnd = sunriseEnd + DURATION_45_MIN;
-                    const goldenHourSetStart = sunsetMs - DURATION_45_MIN; const sunsetEnd = sunsetMs + DURATION_15_MIN; const duskEnd = sunsetEnd + DURATION_25_MIN; const blueHourDuskEnd = duskEnd + DURATION_30_MIN; const lateDuskEnd = blueHourDuskEnd + DURATION_30_MIN;
-                    if (nowMs >= earlyDawnStart && nowMs < blueHourDawnStart) theme = 'early_dawn'; else if (nowMs >= blueHourDawnStart && nowMs < dawnStart) theme = 'blue_hour_dawn'; else if (nowMs >= dawnStart && nowMs < sunriseMs) theme = 'dawn'; else if (nowMs >= sunriseMs && nowMs < sunriseEnd) theme = 'sunrise'; else if (nowMs >= sunriseEnd && nowMs < goldenHourRiseEnd) theme = 'golden_hour_rise'; else if (nowMs >= goldenHourRiseEnd && nowMs < goldenHourSetStart) theme = 'day'; else if (nowMs >= goldenHourSetStart && nowMs < sunsetMs) theme = 'golden_hour_set'; else if (nowMs >= sunsetMs && nowMs < sunsetEnd) theme = 'sunset'; else if (nowMs >= sunsetEnd && nowMs < duskEnd) theme = 'dusk'; else if (nowMs >= duskEnd && nowMs < blueHourDuskEnd) theme = 'blue_hour_dusk'; else if (nowMs >= blueHourDuskEnd && nowMs < lateDuskEnd) theme = 'late_dusk'; else theme = 'night';
-                } catch (e) { theme = fallbackTheme; }
-            }
-            document.body.dataset.theme = theme;
+            document.body.dataset.theme = fallbackTheme;
         }
         
         async function fetchDailyForecastData(lat, lon) {
@@ -259,20 +334,20 @@
                 const forecastDays = [];
                 for(let i = 0; i < 15; i++) {
                     if (!data.dayOfWeek?.[i]) break;
-                    forecastDays.push({
-                        dayName: data.dayOfWeek[i], date: data.validTimeLocal[i], tempMax: data.temperatureMax[i], tempMin: data.temperatureMin[i],
-                        dayPart: data.daypart?.[0] ? { phrase: data.daypart[0].wxPhraseLong?.[i*2], precipChance: data.daypart[0].precipChance?.[i*2], windSpeed: data.daypart[0].windSpeed?.[i*2], windDir: data.daypart[0].windDirection?.[i*2], uvIndex: data.daypart[0].uvIndex?.[i*2], uvDescription: data.daypart[0].uvDescription?.[i*2], iconCode: data.daypart[0].iconCode?.[i*2], dayOrNight: data.daypart[0].dayOrNight?.[i*2] } : null,
-                        nightPart: data.daypart?.[0] ? { phrase: data.daypart[0].wxPhraseLong?.[i*2+1], precipChance: data.daypart[0].precipChance?.[i*2+1], windSpeed: data.daypart[0].windSpeed?.[i*2+1], windDir: data.daypart[0].windDirection?.[i*2+1], iconCode: data.daypart[0].iconCode?.[i*2+1], dayOrNight: data.daypart[0].dayOrNight?.[i*2+1] } : null
-                    });
+                    
+                    const dayPartData = data.daypart?.[0] ? { phrase: data.daypart[0].wxPhraseLong?.[i*2], precipChance: data.daypart[0].precipChance?.[i*2], windSpeed: data.daypart[0].windSpeed?.[i*2], windDir: data.daypart[0].windDirection?.[i*2], uvIndex: data.daypart[0].uvIndex?.[i*2], uvDescription: data.daypart[0].uvDescription?.[i*2], iconCode: data.daypart[0].iconCode?.[i*2], dayOrNight: data.daypart[0].dayOrNight?.[i*2], humidity: data.daypart[0].relativeHumidity?.[i*2], qpf: data.daypart[0].qpf?.[i*2], windGust: data.daypart[0].windGust?.[i*2] } : null;
+                    const nightPartData = data.daypart?.[0] ? { phrase: data.daypart[0].wxPhraseLong?.[i*2+1], precipChance: data.daypart[0].precipChance?.[i*2+1], windSpeed: data.daypart[0].windSpeed?.[i*2+1], windDir: data.daypart[0].windDirection?.[i*2+1], iconCode: data.daypart[0].iconCode?.[i*2+1], dayOrNight: data.daypart[0].dayOrNight?.[i*2+1], humidity: data.daypart[0].relativeHumidity?.[i*2+1], qpf: data.daypart[0].qpf?.[i*2+1], windGust: data.daypart[0].windGust?.[i*2+1] } : null;
+
+                    forecastDays.push({ dayName: data.dayOfWeek[i], date: data.validTimeLocal[i], tempMax: data.temperatureMax[i], tempMin: data.temperatureMin[i], dayPart: dayPartData, nightPart: nightPartData, sunrise: data.sunriseTimeLocal?.[i], sunset: data.sunsetTimeLocal?.[i] });
                 }
-                return { forecastDays, sunriseTimeLocal: data.sunriseTimeLocal?.[0], sunsetTimeLocal: data.sunsetTimeLocal?.[0] };
+                return { forecastDays };
             } catch (error) { console.error(`Adatlekérési hiba: ${error.message}`); throw error; }
         }
         
         function getTemperatureColor(temp) {
             const clampedTemp = Math.max(-10, Math.min(35, temp === null ? 15 : temp));
             const hue = 240 - (clampedTemp + 10) * (240 / 45);
-            return `hsl(${hue}, 85%, 55%)`;
+            return `hsl(${hue}, 85%, 60%)`;
         }
 
         function renderForecastData(daysToRender) {
@@ -291,48 +366,94 @@
                 if (forecastDateStr === todayDateStr) { specialClass = 'today'; dayLabel = 'Ma'; } 
                 else if (forecastDateStr === tomorrowDateStr) { specialClass = 'tomorrow'; dayLabel = 'Holnap'; }
                 const tempColor = getTemperatureColor(day.tempMax);
+
+                const dayWindText = day.dayPart ? `${degreesToCompass(day.dayPart.windDir)} ${formatValue(day.dayPart.windSpeed, ' km/h', 0)} ${day.dayPart.windGust ? `(lökés ${formatValue(day.dayPart.windGust, '', 0)})` : ''}` : NO_DATA_STRING;
+                const nightWindText = day.nightPart ? `${degreesToCompass(day.nightPart.windDir)} ${formatValue(day.nightPart.windSpeed, ' km/h', 0)} ${day.nightPart.windGust ? `(lökés ${formatValue(day.nightPart.windGust, '', 0)})` : ''}` : NO_DATA_STRING;
+
                 forecastHTML += `<div class="forecast-day-card ${specialClass}" style="--temp-color: ${tempColor}; --day-index: ${index};">
                     <div class="forecast-header">
                         <div class="forecast-day-name">${dayLabel}</div>
                         <div class="forecast-date">${formatForecastDate(day.date)}</div>
                     </div>
-                    <div class="forecast-temps"><span class="forecast-temp-max">${formatValue(day.tempMax, '°', 0, '--')}</span><span class="forecast-temp-min">${formatValue(day.tempMin, '°', 0, '--')}</span></div>`;
-                if (day.dayPart) { forecastHTML += `<div class="forecast-part"><div class="forecast-part-header"><i class="${mapTwcIconToFontAwesome(day.dayPart.iconCode, day.dayPart.dayOrNight)}"></i>Nappal</div><div class="forecast-part-details"><p>${day.dayPart.phrase || NO_DATA_STRING}</p><p>Csap.: ${formatValue(day.dayPart.precipChance, '%', 0)}</p><p>Szél: ${degreesToCompass(day.dayPart.windDir)} ${formatValue(day.dayPart.windSpeed, ' km/h', 0)}</p><p>UV: ${formatValue(day.dayPart.uvIndex, '', 0)} (${day.dayPart.uvDescription || 'N/A'})</p></div></div>`; }
-                if (day.nightPart) { forecastHTML += `<div class="forecast-part"><div class="forecast-part-header"><i class="${mapTwcIconToFontAwesome(day.nightPart.iconCode, day.nightPart.dayOrNight)}"></i>Éjjel</div><div class="forecast-part-details"><p>${day.nightPart.phrase || NO_DATA_STRING}</p><p>Csap.: ${formatValue(day.nightPart.precipChance, '%', 0)}</p><p>Szél: ${degreesToCompass(day.nightPart.windDir)} ${formatValue(day.nightPart.windSpeed, ' km/h', 0)}</p></div></div>`; }
+                    <div class="forecast-temps"><span class="forecast-temp-max">${formatValue(day.tempMax, '°', 0, '--')}</span><span class="forecast-temp-min">${formatValue(day.tempMin, '°', 0, '--')}</span></div>
+                    
+                    <div class="forecast-sun-details">
+                        <span>
+                            <span class="icon-combo">
+                                <i class="fas fa-sun icon-sunrise"></i>
+                                <i class="fas fa-arrow-up icon-arrow up"></i>
+                            </span>
+                            ${formatTime(day.sunrise)}
+                        </span>
+                        <span>
+                             <span class="icon-combo">
+                                <i class="fas fa-sun icon-sunset"></i>
+                                <i class="fas fa-arrow-down icon-arrow down"></i>
+                            </span>
+                            ${formatTime(day.sunset)}
+                        </span>
+                    </div>`;
+                
+                if (day.dayPart) {
+                    forecastHTML += `<div class="forecast-part">
+                        <div class="forecast-part-header"><i class="${mapTwcIconToFontAwesome(day.dayPart.iconCode, day.dayPart.dayOrNight)}"></i>Nappal</div>
+                        <div class="forecast-part-details">
+                            <p>${day.dayPart.phrase || NO_DATA_STRING}</p>
+                            <p><i class="fas fa-cloud-showers-heavy" style="width:14px; text-align:center; margin-right:4px;"></i>Csap.: ${formatValue(day.dayPart.precipChance, '%', 0)} (${formatPrecipitation(day.dayPart.qpf)})</p>
+                            <p><i class="fas fa-wind" style="width:14px; text-align:center; margin-right:4px;"></i>Szél: ${dayWindText}</p>
+                            <p><i class="fas fa-tint" style="width:14px; text-align:center; margin-right:4px;"></i>Pára: ${formatValue(day.dayPart.humidity, '%', 0)}</p>
+                            <p><i class="fas fa-sun" style="width:14px; text-align:center; margin-right:4px;"></i>UV: ${formatValue(day.dayPart.uvIndex, '', 0)} (${day.dayPart.uvDescription || 'N/A'})</p>
+                        </div>
+                    </div>`;
+                }
+
+                if (day.nightPart) {
+                    forecastHTML += `<div class="forecast-part">
+                        <div class="forecast-part-header"><i class="${mapTwcIconToFontAwesome(day.nightPart.iconCode, day.nightPart.dayOrNight)}"></i>Éjjel</div>
+                        <div class="forecast-part-details">
+                            <p>${day.nightPart.phrase || NO_DATA_STRING}</p>
+                            <p><i class="fas fa-cloud-showers-heavy" style="width:14px; text-align:center; margin-right:4px;"></i>Csap.: ${formatValue(day.nightPart.precipChance, '%', 0)} (${formatPrecipitation(day.nightPart.qpf)})</p>
+                            <p><i class="fas fa-wind" style="width:14px; text-align:center; margin-right:4px;"></i>Szél: ${nightWindText}</p>
+                            <p><i class="fas fa-tint" style="width:14px; text-align:center; margin-right:4px;"></i>Pára: ${formatValue(day.nightPart.humidity, '%', 0)}</p>
+                        </div>
+                    </div>`;
+                }
                 forecastHTML += `</div>`;
             });
             forecastContainerEl.innerHTML = forecastHTML;
         }
 
-        // === JAVÍTOTT FÜGGVÉNY ===
+        // === JAVÍTOTT FÜGGVÉNY A DINAMIKUS FELIRATHOZ ===
         function populateWeekSelector(forecastDays) {
             const weekSelector = document.getElementById('week-selector');
             if (!weekSelector || forecastDays.length === 0) return;
             weekSelector.innerHTML = '';
 
-            // Első opció: Az első 8 nap, ha elérhető
             if (forecastDays.length > 0) {
-                const option1_end_index = Math.min(7, forecastDays.length - 1);
-                const week1_start = formatForecastDate(forecastDays[0].date);
-                const week1_end = formatForecastDate(forecastDays[option1_end_index].date);
-                weekSelector.add(new Option(`${week1_start} - ${week1_end}`, '0'));
+                // Kiszámoljuk, hány nap van az első periódusban (max. 8)
+                const firstPeriodCount = Math.min(forecastDays.length, 8);
+                weekSelector.add(new Option(`Első ${firstPeriodCount} nap`, '0'));
             }
-
-            // Második opció: A 9. naptól a végéig, ha van annyi
+            // A második opció csak akkor jelenik meg, ha több mint 8 napnyi adatunk van
             if (forecastDays.length > 8) {
-                const week2_start = formatForecastDate(forecastDays[8].date);
-                const week2_end = formatForecastDate(forecastDays[forecastDays.length - 1].date);
-                weekSelector.add(new Option(`${week2_start} - ${week2_end}`, '8'));
+                weekSelector.add(new Option(`Következő napok`, '8'));
             }
         }
         
-        // === JAVÍTOTT FÜGGVÉNY ===
         function handleWeekChange() {
             const weekSelector = document.getElementById('week-selector');
+            const dateRangeDisplay = document.getElementById('date-range-display');
             const startIndex = parseInt(weekSelector.value, 10);
             
-            // Az első szelet 8 napos, a második a maradék
             const daysToShow = (startIndex === 0) ? allForecastDays.slice(0, 8) : allForecastDays.slice(8);
+            
+            if (daysToShow.length > 0) {
+                const startDate = formatForecastDate(daysToShow[0].date);
+                const endDate = formatForecastDate(daysToShow[daysToShow.length - 1].date);
+                dateRangeDisplay.textContent = `${startDate} - ${endDate}`;
+            } else {
+                dateRangeDisplay.textContent = 'Nincs adat';
+            }
             renderForecastData(daysToShow);
         }
 
@@ -340,13 +461,14 @@
             const forecastContainerEl = document.getElementById('forecast-container');
             const lastUpdatedEl = document.getElementById('last-updated-time');
             try {
-                const data = await fetchDailyForecastData(NYIREGYHAZA_COORDS.lat, NYIREGYHAZA_COORDS.lon);
-                if (data && data.forecastDays && data.forecastDays.length > 0) {
+                const { forecastDays } = await fetchDailyForecastData(NYIREGYHAZA_COORDS.lat, NYIREGYHAZA_COORDS.lon);
+                
+                if (forecastDays && forecastDays.length > 0) {
                     lastUpdatedEl.textContent = formatLastUpdated(new Date());
-                    allForecastDays = data.forecastDays;
+                    allForecastDays = forecastDays;
                     populateWeekSelector(allForecastDays);
                     handleWeekChange();
-                    updateThemeAndSky(new Date(), data.sunriseTimeLocal, data.sunsetTimeLocal);
+                    updateThemeAndSky();
                 } else { throw new Error("Sikertelen adatfeldolgozás."); }
             } catch (error) {
                 if(forecastContainerEl) forecastContainerEl.innerHTML = `<div class="loading-message">⚠️ Hiba történt az előrejelzés frissítése közben. Kérjük, próbálja meg később!</div>`;
@@ -357,12 +479,7 @@
             document.getElementById('week-selector').addEventListener('change', handleWeekChange);
             fetchAndRenderWeather(); 
             setInterval(fetchAndRenderWeather, REFRESH_INTERVAL_MS);
-
-            setInterval(() => {
-                if (allForecastDays.length > 0) {
-                    updateThemeAndSky(new Date(), allForecastDays[0].sunriseTimeLocal, allForecastDays[0].sunsetTimeLocal);
-                }
-            }, 60 * 1000);
+            setInterval(updateThemeAndSky, 60 * 1000);
         }
 
         document.addEventListener('DOMContentLoaded', initApp);
