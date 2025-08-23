@@ -304,26 +304,35 @@
             forecastContainerEl.innerHTML = forecastHTML;
         }
 
+        // === JAVÍTOTT FÜGGVÉNY ===
         function populateWeekSelector(forecastDays) {
             const weekSelector = document.getElementById('week-selector');
             if (!weekSelector || forecastDays.length === 0) return;
             weekSelector.innerHTML = '';
-            if (forecastDays.length >= 7) {
+
+            // Első opció: Az első 8 nap, ha elérhető
+            if (forecastDays.length > 0) {
+                const option1_end_index = Math.min(7, forecastDays.length - 1);
                 const week1_start = formatForecastDate(forecastDays[0].date);
-                const week1_end = formatForecastDate(forecastDays[6].date);
+                const week1_end = formatForecastDate(forecastDays[option1_end_index].date);
                 weekSelector.add(new Option(`${week1_start} - ${week1_end}`, '0'));
             }
-            if (forecastDays.length > 7) {
-                const week2_start = formatForecastDate(forecastDays[7].date);
+
+            // Második opció: A 9. naptól a végéig, ha van annyi
+            if (forecastDays.length > 8) {
+                const week2_start = formatForecastDate(forecastDays[8].date);
                 const week2_end = formatForecastDate(forecastDays[forecastDays.length - 1].date);
-                weekSelector.add(new Option(`${week2_start} - ${week2_end}`, '7'));
+                weekSelector.add(new Option(`${week2_start} - ${week2_end}`, '8'));
             }
         }
         
+        // === JAVÍTOTT FÜGGVÉNY ===
         function handleWeekChange() {
             const weekSelector = document.getElementById('week-selector');
             const startIndex = parseInt(weekSelector.value, 10);
-            const daysToShow = (startIndex === 0) ? allForecastDays.slice(0, 7) : allForecastDays.slice(7);
+            
+            // Az első szelet 8 napos, a második a maradék
+            const daysToShow = (startIndex === 0) ? allForecastDays.slice(0, 8) : allForecastDays.slice(8);
             renderForecastData(daysToShow);
         }
 
