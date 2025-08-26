@@ -151,8 +151,9 @@
         .forecast-container { 
             width: 100%; 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); 
-            gap: 18px; 
+            /* === MÓDOSÍTÁS ===: A kártyák minimális szélessége és a köz csökkentve, hogy 8 is kiférjen. */
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 16px; 
             margin: 0 auto; 
         }
         @keyframes card-entry { 
@@ -423,29 +424,32 @@
             forecastContainerEl.innerHTML = forecastHTML;
         }
 
-        // === JAVÍTOTT FÜGGVÉNY A DINAMIKUS FELIRATHOZ ===
+        // === MÓDOSÍTOTT FÜGGVÉNY: A VÁLASZTÓ FELTÖLTÉSE FIX 7 ÉS 8 NAPPAL ===
         function populateWeekSelector(forecastDays) {
             const weekSelector = document.getElementById('week-selector');
             if (!weekSelector || forecastDays.length === 0) return;
             weekSelector.innerHTML = '';
 
+            // Az első opció mindig az első 7 napot mutatja
             if (forecastDays.length > 0) {
-                // Kiszámoljuk, hány nap van az első periódusban (max. 8)
-                const firstPeriodCount = Math.min(forecastDays.length, 8);
-                weekSelector.add(new Option(`Első ${firstPeriodCount} nap`, '0'));
+                weekSelector.add(new Option('Aktuális hét (7 nap)', '0'));
             }
-            // A második opció csak akkor jelenik meg, ha több mint 8 napnyi adatunk van
-            if (forecastDays.length > 8) {
-                weekSelector.add(new Option(`Következő napok`, '8'));
+
+            // A második opció a következő napokat mutatja, ha több mint 7 napnyi adatunk van.
+            if (forecastDays.length > 7) {
+                const remainingDays = forecastDays.length - 7;
+                weekSelector.add(new Option(`Következő ${remainingDays} nap`, '7'));
             }
         }
         
+        // === MÓDOSÍTOTT FÜGGVÉNY: A NÉZET VÁLTÁSA A FIX 7/8 NAPOS FELOSZTÁS SZERINT ===
         function handleWeekChange() {
             const weekSelector = document.getElementById('week-selector');
             const dateRangeDisplay = document.getElementById('date-range-display');
             const startIndex = parseInt(weekSelector.value, 10);
             
-            const daysToShow = (startIndex === 0) ? allForecastDays.slice(0, 8) : allForecastDays.slice(8);
+            // Az első "oldal" 7 napot mutat (index 0-6), a második a többit (index 7-től).
+            const daysToShow = (startIndex === 0) ? allForecastDays.slice(0, 7) : allForecastDays.slice(7);
             
             if (daysToShow.length > 0) {
                 const startDate = formatForecastDate(daysToShow[0].date);
