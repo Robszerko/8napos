@@ -86,31 +86,25 @@
             margin: 0 auto;
             color: var(--current-text-color); 
             transition: color 0.6s ease-in-out;
-            /* === MÓDOSÍTÁS: Hely a fix fejlécnek === */
-            padding-top: 80px;
+            padding-top: 70px; /* Hely a fix fejlécnek */
         }
 
-        /* === MÓDOSÍTOTT FEJLÉC STÍLUSOK === */
+        /* === MÓDOSÍTOTT FEJLÉC: Kisebb és diszkrétebb === */
         .header-controls {
-            /* Asztali nézet: Fix, egysoros "Nyelv" / "Fül" stílus a bal felső sarokban */
             position: fixed;
             top: 0;
             left: 0;
             z-index: 1000;
-
             display: flex;
-            flex-direction: row;
             align-items: center;
-            gap: 24px;
+            gap: 16px; /* Kisebb távolság az elemek között */
             width: auto;
-            padding: 12px 24px 12px 20px;
-            
+            padding: 8px 20px 8px 16px; /* Csökkentett belső térköz */
             background: var(--current-bg-header);
             border: 1px solid var(--current-widget-border);
             border-top: none;
             border-left: none;
-            border-radius: 0 0 20px 0; /* Ez adja a "belógó" hatást */
-
+            border-radius: 0 0 18px 0;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             box-shadow: 4px 8px 32px 0 rgba(0, 0, 0, 0.3);
@@ -119,37 +113,35 @@
 
         .location-details {
             display: flex;
-            flex-direction: row; /* Vízszintes elrendezés asztalon */
-            align-items: baseline; /* Szépen egymáshoz igazítja a különböző méretű szövegeket */
-            gap: 16px;
+            align-items: baseline;
+            gap: 12px; /* Kisebb távolság */
             white-space: nowrap;
         }
         .location-details h1 {
-            font-size: 18px;
+            font-size: 16px; /* Kisebb betűméret */
             font-weight: 700;
             color: var(--current-text-color);
             margin: 0;
         }
         .location-details .date-range, .location-details .last-updated {
-            font-size: 13px;
+            font-size: 12px; /* Kisebb betűméret */
             font-weight: 500;
             color: var(--current-text-muted-color);
             margin: 0;
         }
         .location-details .last-updated {
-            /* Kisebb, diszkrétebb megjelenés */
-            font-size: 12px;
-            opacity: 0.8;
+            font-size: 11px; /* Még kisebb */
+            opacity: 0.7;
         }
 
         #week-selector {
             background-color: transparent;
             color: var(--current-text-color);
             border: 1px solid var(--current-widget-border);
-            border-radius: 10px;
-            padding: 8px 14px;
+            border-radius: 8px; /* Kisebb rádiusz */
+            padding: 6px 12px; /* Kompaktabb méret */
             font-family: 'Inter', sans-serif;
-            font-size: 14px;
+            font-size: 13px; /* Kisebb betűméret */
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -248,26 +240,24 @@
         .forecast-part-details p { margin: 4px 0; }
         .forecast-part-details p i { vertical-align: middle; }
 
-        /* === MÓDOSÍTOTT FEJLÉC MOBILNÉZET === */
-        @media (max-width: 900px) { /* A töréspontot megnöveltem, hogy a tartalom biztosan elférjen */
+        /* === FEJLÉC MOBILNÉZET === */
+        @media (max-width: 900px) {
             .main-container {
-                padding-top: 20px; /* Visszaállítjuk a normál térközt */
+                padding-top: 20px;
             }
-
             .header-controls { 
-                position: relative; /* Visszaállítás a normál dokumentumfolyamba */
-                display: flex;
+                position: relative;
                 flex-direction: column; 
                 align-items: center;
                 width: 95%; 
-                max-width: 400px; /* Maximális szélesség a jobb olvashatóságért */
-                margin: 0 auto 24px auto; /* Középre igazítás és alsó térköz */
-                gap: 15px;
-                border-radius: 20px; /* Teljes lekerekítés visszaállítása */
-                border: 1px solid var(--current-widget-border); /* Minden oldali keret visszaállítása */
+                max-width: 400px;
+                margin: 0 auto 24px auto;
+                gap: 12px;
+                border-radius: 20px;
+                border: 1px solid var(--current-widget-border);
             }
             .location-details { 
-                flex-direction: column; /* Elemek egymás alá kerülnek */
+                flex-direction: column;
                 align-items: center; 
                 text-align: center;
                 gap: 4px;
@@ -282,7 +272,6 @@
 <body data-theme="night">
     <div class="sky-gradient-overlay"></div>
 
-    <!-- A header-wrapper div-et eltávolítottam a tisztább struktúra érdekében -->
     <div class="header-controls">
         <div class="location-details">
             <h1>Nyíregyháza időjárása</h1>
@@ -456,27 +445,32 @@
             forecastContainerEl.innerHTML = forecastHTML;
         }
 
+        // === MÓDOSÍTOTT FÜGGVÉNY: 8 napos felosztás ===
         function populateWeekSelector(forecastDays) {
             const weekSelector = document.getElementById('week-selector');
             if (!weekSelector || forecastDays.length === 0) return;
             weekSelector.innerHTML = '';
 
+            // Az első opció mindig az első 8 napot mutatja
             if (forecastDays.length > 0) {
-                weekSelector.add(new Option('Aktuális hét (7 nap)', '0'));
+                weekSelector.add(new Option('Első 8 nap', '0'));
             }
 
-            if (forecastDays.length > 7) {
-                const remainingDays = forecastDays.length - 7;
-                weekSelector.add(new Option(`Következő ${remainingDays} nap`, '7'));
+            // A második opció a következő napokat mutatja, ha több mint 8 napnyi adatunk van.
+            if (forecastDays.length > 8) {
+                const remainingDays = forecastDays.length - 8;
+                weekSelector.add(new Option(`Következő ${remainingDays} nap`, '8'));
             }
         }
         
+        // === MÓDOSÍTOTT FÜGGVÉNY: 8 napos felosztás ===
         function handleWeekChange() {
             const weekSelector = document.getElementById('week-selector');
             const dateRangeDisplay = document.getElementById('date-range-display');
             const startIndex = parseInt(weekSelector.value, 10);
             
-            const daysToShow = (startIndex === 0) ? allForecastDays.slice(0, 7) : allForecastDays.slice(7);
+            // Az első "oldal" 8 napot mutat (index 0-7), a második a többit (index 8-tól).
+            const daysToShow = (startIndex === 0) ? allForecastDays.slice(0, 8) : allForecastDays.slice(8);
             
             if (daysToShow.length > 0) {
                 const startDate = formatForecastDate(daysToShow[0].date);
