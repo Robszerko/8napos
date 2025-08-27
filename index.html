@@ -83,62 +83,73 @@
         .main-container { 
             width: 100%; 
             max-width: 1600px; 
-            margin: 20px auto; 
+            margin: 0 auto;
             color: var(--current-text-color); 
-            transition: color 0.6s ease-in-out; 
+            transition: color 0.6s ease-in-out;
+            /* === MÓDOSÍTÁS: Hely a fix fejlécnek === */
+            padding-top: 80px;
         }
 
-        .header-wrapper {
-            width: 100%;
-            display: flex;
-            justify-content: flex-start;
-            margin-bottom: 24px;
-        }
-        
+        /* === MÓDOSÍTOTT FEJLÉC STÍLUSOK === */
         .header-controls {
+            /* Asztali nézet: Fix, egysoros "Nyelv" / "Fül" stílus a bal felső sarokban */
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+
             display: flex;
+            flex-direction: row;
             align-items: center;
-            justify-content: space-between;
             gap: 24px;
             width: auto;
-            padding: 12px 24px;
+            padding: 12px 24px 12px 20px;
+            
             background: var(--current-bg-header);
             border: 1px solid var(--current-widget-border);
-            border-radius: 20px;
+            border-top: none;
+            border-left: none;
+            border-radius: 0 0 20px 0; /* Ez adja a "belógó" hatást */
+
             backdrop-filter: blur(20px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 4px 8px 32px 0 rgba(0, 0, 0, 0.3);
             transition: all 0.4s ease-in-out;
         }
 
         .location-details {
-            text-align: left;
             display: flex;
-            flex-direction: column;
-            gap: 4px;
+            flex-direction: row; /* Vízszintes elrendezés asztalon */
+            align-items: baseline; /* Szépen egymáshoz igazítja a különböző méretű szövegeket */
+            gap: 16px;
+            white-space: nowrap;
         }
         .location-details h1 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--current-text-color);
             margin: 0;
-            white-space: nowrap;
         }
         .location-details .date-range, .location-details .last-updated {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             color: var(--current-text-muted-color);
             margin: 0;
-            white-space: nowrap;
+        }
+        .location-details .last-updated {
+            /* Kisebb, diszkrétebb megjelenés */
+            font-size: 12px;
+            opacity: 0.8;
         }
 
         #week-selector {
             background-color: transparent;
             color: var(--current-text-color);
             border: 1px solid var(--current-widget-border);
-            border-radius: 12px;
-            padding: 10px 16px;
+            border-radius: 10px;
+            padding: 8px 14px;
             font-family: 'Inter', sans-serif;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -151,7 +162,6 @@
         .forecast-container { 
             width: 100%; 
             display: grid; 
-            /* === MÓDOSÍTÁS ===: A kártyák minimális szélessége és a köz csökkentve, hogy 8 is kiférjen. */
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
             gap: 16px; 
             margin: 0 auto; 
@@ -238,29 +248,51 @@
         .forecast-part-details p { margin: 4px 0; }
         .forecast-part-details p i { vertical-align: middle; }
 
-        @media (max-width: 768px) {
-            .header-wrapper { justify-content: center; }
-            .header-controls { flex-direction: column; width: 95%; gap: 15px; }
-            .location-details { text-align: center; }
-            .forecast-container { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+        /* === MÓDOSÍTOTT FEJLÉC MOBILNÉZET === */
+        @media (max-width: 900px) { /* A töréspontot megnöveltem, hogy a tartalom biztosan elférjen */
+            .main-container {
+                padding-top: 20px; /* Visszaállítjuk a normál térközt */
+            }
+
+            .header-controls { 
+                position: relative; /* Visszaállítás a normál dokumentumfolyamba */
+                display: flex;
+                flex-direction: column; 
+                align-items: center;
+                width: 95%; 
+                max-width: 400px; /* Maximális szélesség a jobb olvashatóságért */
+                margin: 0 auto 24px auto; /* Középre igazítás és alsó térköz */
+                gap: 15px;
+                border-radius: 20px; /* Teljes lekerekítés visszaállítása */
+                border: 1px solid var(--current-widget-border); /* Minden oldali keret visszaállítása */
+            }
+            .location-details { 
+                flex-direction: column; /* Elemek egymás alá kerülnek */
+                align-items: center; 
+                text-align: center;
+                gap: 4px;
+            }
+            .forecast-container { 
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+                gap: 12px; 
+            }
         }
     </style>
 </head>
 <body data-theme="night">
     <div class="sky-gradient-overlay"></div>
 
-    <div class="main-container">
-        <div class="header-wrapper">
-            <div class="header-controls">
-                <div class="location-details">
-                    <h1>Nyíregyháza időjárása</h1>
-                    <p class="date-range" id="date-range-display">Betöltés...</p>
-                    <p class="last-updated" id="last-updated-time">Frissítés...</p>
-                </div>
-                <select id="week-selector" aria-label="Válasszon időszakot"></select>
-            </div>
+    <!-- A header-wrapper div-et eltávolítottam a tisztább struktúra érdekében -->
+    <div class="header-controls">
+        <div class="location-details">
+            <h1>Nyíregyháza időjárása</h1>
+            <p class="date-range" id="date-range-display">Betöltés...</p>
+            <p class="last-updated" id="last-updated-time">Frissítés...</p>
         </div>
-        
+        <select id="week-selector" aria-label="Válasszon időszakot"></select>
+    </div>
+
+    <div class="main-container">
         <div class="forecast-container" id="forecast-container">
             <div class="loading-message">Előrejelzés betöltése...</div>
         </div>
@@ -424,31 +456,26 @@
             forecastContainerEl.innerHTML = forecastHTML;
         }
 
-        // === MÓDOSÍTOTT FÜGGVÉNY: A VÁLASZTÓ FELTÖLTÉSE FIX 7 ÉS 8 NAPPAL ===
         function populateWeekSelector(forecastDays) {
             const weekSelector = document.getElementById('week-selector');
             if (!weekSelector || forecastDays.length === 0) return;
             weekSelector.innerHTML = '';
 
-            // Az első opció mindig az első 7 napot mutatja
             if (forecastDays.length > 0) {
                 weekSelector.add(new Option('Aktuális hét (7 nap)', '0'));
             }
 
-            // A második opció a következő napokat mutatja, ha több mint 7 napnyi adatunk van.
             if (forecastDays.length > 7) {
                 const remainingDays = forecastDays.length - 7;
                 weekSelector.add(new Option(`Következő ${remainingDays} nap`, '7'));
             }
         }
         
-        // === MÓDOSÍTOTT FÜGGVÉNY: A NÉZET VÁLTÁSA A FIX 7/8 NAPOS FELOSZTÁS SZERINT ===
         function handleWeekChange() {
             const weekSelector = document.getElementById('week-selector');
             const dateRangeDisplay = document.getElementById('date-range-display');
             const startIndex = parseInt(weekSelector.value, 10);
             
-            // Az első "oldal" 7 napot mutat (index 0-6), a második a többit (index 7-től).
             const daysToShow = (startIndex === 0) ? allForecastDays.slice(0, 7) : allForecastDays.slice(7);
             
             if (daysToShow.length > 0) {
