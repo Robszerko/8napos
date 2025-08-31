@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
-            /* === "AURORA GLASS" TÉMA === */
+            /* Alapértelmezett (éjszakai) téma */
+            --sky-color-top-night: #0a0215;
+            --sky-color-bottom-night: #1d0f3b;
             --accent-interactive-night: #2dd4bf; 
             --text-primary-night: #F3F4F6;
             --text-secondary-night: #9CA3AF;
@@ -17,20 +19,16 @@
             --bg-header-night: rgba(29, 21, 58, 0.7);
 
             /* Nappali téma */
+            --sky-color-top-day: #7DD3FC;
+            --sky-color-bottom-day: #C4EFFF;
             --accent-interactive-day: #007AFF;
             --text-primary-day: #111827;
             --text-secondary-day: #4B5563;
             --bg-widget-day: linear-gradient(160deg, rgba(240, 248, 255, 0.92) 0%, rgba(225, 238, 252, 0.90) 100%);
             --border-widget-day: rgba(0, 122, 255, 0.18);
             --bg-header-day: rgba(245, 250, 255, 0.95);
-
-            /* Háttérgradiensek */
-            --sky-color-top-night: #0a0215;
-            --sky-color-bottom-night: #1d0f3b;
-            --sky-color-top-day: #7DD3FC;
-            --sky-color-bottom-day: #C4EFFF;
             
-            /* Aktuális Téma */
+            /* Aktuális, dinamikusan változó téma */
             --current-sky-color-top: var(--sky-color-top-night);
             --current-sky-color-bottom: var(--sky-color-bottom-night);
             --current-text-color: var(--text-primary-night);
@@ -86,10 +84,9 @@
             margin: 0 auto;
             color: var(--current-text-color); 
             transition: color 0.6s ease-in-out;
-            padding-top: 70px; /* Hely a fix fejlécnek */
+            padding-top: 40px;
         }
 
-        /* === MÓDOSÍTOTT FEJLÉC: Kisebb és diszkrétebb === */
         .header-controls {
             position: fixed;
             top: 0;
@@ -97,9 +94,9 @@
             z-index: 1000;
             display: flex;
             align-items: center;
-            gap: 16px; /* Kisebb távolság az elemek között */
+            gap: 16px;
             width: auto;
-            padding: 8px 20px 8px 16px; /* Csökkentett belső térköz */
+            padding: 8px 20px 8px 16px;
             background: var(--current-bg-header);
             border: 1px solid var(--current-widget-border);
             border-top: none;
@@ -114,23 +111,23 @@
         .location-details {
             display: flex;
             align-items: baseline;
-            gap: 12px; /* Kisebb távolság */
+            gap: 12px;
             white-space: nowrap;
         }
         .location-details h1 {
-            font-size: 16px; /* Kisebb betűméret */
+            font-size: 16px;
             font-weight: 700;
             color: var(--current-text-color);
             margin: 0;
         }
         .location-details .date-range, .location-details .last-updated {
-            font-size: 12px; /* Kisebb betűméret */
+            font-size: 12px;
             font-weight: 500;
             color: var(--current-text-muted-color);
             margin: 0;
         }
         .location-details .last-updated {
-            font-size: 11px; /* Még kisebb */
+            font-size: 11px;
             opacity: 0.7;
         }
 
@@ -138,10 +135,10 @@
             background-color: transparent;
             color: var(--current-text-color);
             border: 1px solid var(--current-widget-border);
-            border-radius: 8px; /* Kisebb rádiusz */
-            padding: 6px 12px; /* Kompaktabb méret */
+            border-radius: 8px;
+            padding: 6px 12px;
             font-family: 'Inter', sans-serif;
-            font-size: 13px; /* Kisebb betűméret */
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -240,7 +237,6 @@
         .forecast-part-details p { margin: 4px 0; }
         .forecast-part-details p i { vertical-align: middle; }
 
-        /* === FEJLÉC MOBILNÉZET === */
         @media (max-width: 900px) {
             .main-container {
                 padding-top: 20px;
@@ -251,7 +247,7 @@
                 align-items: center;
                 width: 95%; 
                 max-width: 400px;
-                margin: 0 auto 24px auto;
+                margin: 0 auto 16px auto;
                 gap: 12px;
                 border-radius: 20px;
                 border: 1px solid var(--current-widget-border);
@@ -291,8 +287,23 @@
         const weatherComApiKey = 'e1f10a1e78da46f5b10a1e78da96f525';
         const NYIREGYHAZA_COORDS = { lat: 47.9550, lon: 21.7160 };
         const NO_DATA_STRING = 'N/A';
-        const REFRESH_INTERVAL_MS = 15 * 60 * 1000;
+        const REFRESH_INTERVAL_MS = 15 * 60 * 1000; // 15 perc
         let allForecastDays = [];
+
+        // === ÚJ: Dinamikus égbolt színpaletta ===
+        const SKY_PALETTE = {
+            DEEP_NIGHT: { top: '#0a0215', bottom: '#1d0f3b' },      // Éjfél után
+            PRE_DAWN:   { top: '#110d2e', bottom: '#3a265e' },      // Napkelte előtt ~90 perccel
+            DAWN:       { top: '#2c2a65', bottom: '#785a9b' },      // Napkelte előtt ~45 perccel
+            SUNRISE:    { top: '#5f69c4', bottom: '#f89a7a' },      // Napkelte környékén
+            MORNING:    { top: '#7DD3FC', bottom: '#C4EFFF' },      // Napkelte után
+            LATE_MORNING:{ top: '#5bb8f2', bottom: '#a6ddf6' },      // Délelőtt
+            NOON:       { top: '#2e92e1', bottom: '#84c5f1' },      // Dél körül
+            AFTERNOON:  { top: '#0e67b1', bottom: '#f4a974' },      // Délután
+            SUNSET:     { top: '#1b328a', bottom: '#f77b5a' },      // Napnyugta környékén
+            DUSK:       { top: '#1d215b', bottom: '#87517c' },      // Napnyugta után ~45 perccel
+            EVENING:    { top: '#0f0e34', bottom: '#483475' }       // Este
+        };
 
         function formatLastUpdated(date) {
             const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -312,20 +323,16 @@
 
         function formatForecastDate(isoDateString) {
             if (!isoDateString) return '';
-            try {
-                const date = new Date(isoDateString);
-                const options = { month: 'short', day: 'numeric' };
-                return new Intl.DateTimeFormat('hu-HU', options).format(date);
-            } catch (e) { return ''; }
+            const date = new Date(isoDateString);
+            const options = { month: 'short', day: 'numeric' };
+            return new Intl.DateTimeFormat('hu-HU', options).format(date);
         }
 
         function formatTime(isoDateString) {
             if (!isoDateString) return NO_DATA_STRING;
-            try {
-                const date = new Date(isoDateString);
-                const options = { hour: '2-digit', minute: '2-digit', hour12: false };
-                return new Intl.DateTimeFormat('hu-HU', options).format(date);
-            } catch (e) { return NO_DATA_STRING; }
+            const date = new Date(isoDateString);
+            const options = { hour: '2-digit', minute: '2-digit', hour12: false };
+            return new Intl.DateTimeFormat('hu-HU', options).format(date);
         }
         
         function degreesToCompass(degrees) {
@@ -341,9 +348,54 @@
             return iconMap[iconCode] || 'fas fa-question-circle';
         }
 
-        function updateThemeAndSky() {
-            const fallbackTheme = (new Date().getHours() >= 7 && new Date().getHours() < 18) ? 'day' : 'night';
-            document.body.dataset.theme = fallbackTheme;
+        // === MÓDOSÍTOTT: Dinamikus égbolt és téma frissítése ===
+        function updateDynamicSky() {
+            const todayStr = new Date().toISOString().slice(0, 10);
+            const todayForecast = allForecastDays.find(day => new Date(day.date).toISOString().slice(0, 10) === todayStr);
+
+            if (!todayForecast || !todayForecast.sunrise || !todayForecast.sunset) {
+                // Fallback, ha még nincsenek adatok
+                const isDay = new Date().getHours() >= 7 && new Date().getHours() < 18;
+                document.body.dataset.theme = isDay ? 'day' : 'night';
+                return;
+            }
+
+            const sunriseTime = new Date(todayForecast.sunrise);
+            const sunsetTime = new Date(todayForecast.sunset);
+            const now = new Date();
+
+            const dayDuration = (sunsetTime - sunriseTime);
+            const timeSinceSunrise = (now - sunriseTime);
+            
+            let currentPalette;
+            let theme = 'night';
+
+            const sunriseMinus90 = new Date(sunriseTime.getTime() - 90 * 60 * 1000);
+            const sunriseMinus45 = new Date(sunriseTime.getTime() - 45 * 60 * 1000);
+            const sunsetPlus45 = new Date(sunsetTime.getTime() + 45 * 60 * 1000);
+            const sunsetPlus90 = new Date(sunsetTime.getTime() + 90 * 60 * 1000);
+
+            if (now > sunriseTime && now < sunsetTime) {
+                theme = 'day';
+                const dayProgress = timeSinceSunrise / dayDuration;
+                if (dayProgress < 0.15) currentPalette = SKY_PALETTE.MORNING;      // Reggel
+                else if (dayProgress < 0.4) currentPalette = SKY_PALETTE.LATE_MORNING; // Délelőtt
+                else if (dayProgress < 0.6) currentPalette = SKY_PALETTE.NOON;        // Dél
+                else if (dayProgress < 0.85) currentPalette = SKY_PALETTE.AFTERNOON;   // Délután
+                else currentPalette = SKY_PALETTE.SUNSET; // Napnyugta előtti óra
+            } else {
+                theme = 'night';
+                if (now >= sunsetTime && now < sunsetPlus45) currentPalette = SKY_PALETTE.DUSK;
+                else if (now >= sunsetPlus45 && now < sunsetPlus90) currentPalette = SKY_PALETTE.EVENING;
+                else if (now < sunriseMinus90) currentPalette = SKY_PALETTE.DEEP_NIGHT;
+                else if (now < sunriseMinus45) currentPalette = SKY_PALETTE.PRE_DAWN;
+                else if (now < sunriseTime) currentPalette = SKY_PALETTE.DAWN;
+                else currentPalette = SKY_PALETTE.DEEP_NIGHT; // Alapértelmezett éjszaka
+            }
+            
+            document.body.dataset.theme = theme;
+            document.documentElement.style.setProperty('--current-sky-color-top', currentPalette.top);
+            document.documentElement.style.setProperty('--current-sky-color-bottom', currentPalette.bottom);
         }
         
         async function fetchDailyForecastData(lat, lon) {
@@ -378,8 +430,14 @@
                 if(forecastContainerEl) forecastContainerEl.innerHTML = '<div class="loading-message">Nincsenek megjeleníthető adatok.</div>';
                 return;
             }
-            const today = new Date(); const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-            const todayDateStr = today.toISOString().slice(0, 10); const tomorrowDateStr = tomorrow.toISOString().slice(0, 10);
+
+            // === JAVÍTVA: A mai és holnapi nap meghatározása minden rendereléskor lefut ===
+            const today = new Date();
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const todayDateStr = today.toISOString().slice(0, 10);
+            const tomorrowDateStr = tomorrow.toISOString().slice(0, 10);
+            
             let forecastHTML = '';
             daysToRender.forEach((day, index) => {
                 if (!day.dayName || day.tempMax == null || day.tempMin == null) return;
@@ -400,20 +458,8 @@
                     <div class="forecast-temps"><span class="forecast-temp-max">${formatValue(day.tempMax, '°', 0, '--')}</span><span class="forecast-temp-min">${formatValue(day.tempMin, '°', 0, '--')}</span></div>
                     
                     <div class="forecast-sun-details">
-                        <span>
-                            <span class="icon-combo">
-                                <i class="fas fa-sun icon-sunrise"></i>
-                                <i class="fas fa-arrow-up icon-arrow up"></i>
-                            </span>
-                            ${formatTime(day.sunrise)}
-                        </span>
-                        <span>
-                             <span class="icon-combo">
-                                <i class="fas fa-sun icon-sunset"></i>
-                                <i class="fas fa-arrow-down icon-arrow down"></i>
-                            </span>
-                            ${formatTime(day.sunset)}
-                        </span>
+                        <span><span class="icon-combo"><i class="fas fa-sun icon-sunrise"></i><i class="fas fa-arrow-up icon-arrow up"></i></span>${formatTime(day.sunrise)}</span>
+                        <span><span class="icon-combo"><i class="fas fa-sun icon-sunset"></i><i class="fas fa-arrow-down icon-arrow down"></i></span>${formatTime(day.sunset)}</span>
                     </div>`;
                 
                 if (day.dayPart) {
@@ -445,33 +491,22 @@
             forecastContainerEl.innerHTML = forecastHTML;
         }
 
-        // === MÓDOSÍTOTT FÜGGVÉNY: 8 napos felosztás ===
         function populateWeekSelector(forecastDays) {
             const weekSelector = document.getElementById('week-selector');
             if (!weekSelector || forecastDays.length === 0) return;
             weekSelector.innerHTML = '';
-
-            // Az első opció mindig az első 8 napot mutatja
-            if (forecastDays.length > 0) {
-                weekSelector.add(new Option('Első 8 nap', '0'));
-            }
-
-            // A második opció a következő napokat mutatja, ha több mint 8 napnyi adatunk van.
-            if (forecastDays.length > 8) {
-                const remainingDays = forecastDays.length - 8;
-                weekSelector.add(new Option(`Következő ${remainingDays} nap`, '8'));
+            if (forecastDays.length > 0) weekSelector.add(new Option('Első 7 nap', '0'));
+            if (forecastDays.length > 7) {
+                const remainingDays = forecastDays.length - 7;
+                weekSelector.add(new Option(`Következő ${remainingDays} nap`, '7'));
             }
         }
         
-        // === MÓDOSÍTOTT FÜGGVÉNY: 8 napos felosztás ===
         function handleWeekChange() {
             const weekSelector = document.getElementById('week-selector');
             const dateRangeDisplay = document.getElementById('date-range-display');
             const startIndex = parseInt(weekSelector.value, 10);
-            
-            // Az első "oldal" 8 napot mutat (index 0-7), a második a többit (index 8-tól).
-            const daysToShow = (startIndex === 0) ? allForecastDays.slice(0, 8) : allForecastDays.slice(8);
-            
+            const daysToShow = (startIndex === 0) ? allForecastDays.slice(0, 7) : allForecastDays.slice(7);
             if (daysToShow.length > 0) {
                 const startDate = formatForecastDate(daysToShow[0].date);
                 const endDate = formatForecastDate(daysToShow[daysToShow.length - 1].date);
@@ -487,24 +522,35 @@
             const lastUpdatedEl = document.getElementById('last-updated-time');
             try {
                 const { forecastDays } = await fetchDailyForecastData(NYIREGYHAZA_COORDS.lat, NYIREGYHAZA_COORDS.lon);
-                
                 if (forecastDays && forecastDays.length > 0) {
                     lastUpdatedEl.textContent = formatLastUpdated(new Date());
                     allForecastDays = forecastDays;
                     populateWeekSelector(allForecastDays);
                     handleWeekChange();
-                    updateThemeAndSky();
+                    updateDynamicSky(); // Azonnali égbolt frissítés az adatokkal
                 } else { throw new Error("Sikertelen adatfeldolgozás."); }
             } catch (error) {
+                console.error("Hiba az időjárás adatok feldolgozása során:", error);
                 if(forecastContainerEl) forecastContainerEl.innerHTML = `<div class="loading-message">⚠️ Hiba történt az előrejelzés frissítése közben. Kérjük, próbálja meg később!</div>`;
             }
+        }
+
+        function scheduleMidnightRefresh() {
+            const now = new Date();
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            const msUntilMidnight = tomorrow - now + 1000;
+            setTimeout(() => {
+                fetchAndRenderWeather();
+                setInterval(fetchAndRenderWeather, 24 * 60 * 60 * 1000);
+            }, msUntilMidnight);
         }
 
         function initApp() {
             document.getElementById('week-selector').addEventListener('change', handleWeekChange);
             fetchAndRenderWeather(); 
             setInterval(fetchAndRenderWeather, REFRESH_INTERVAL_MS);
-            setInterval(updateThemeAndSky, 60 * 1000);
+            setInterval(updateDynamicSky, 60 * 1000); // Égbolt frissítése percenként
+            scheduleMidnightRefresh();
         }
 
         document.addEventListener('DOMContentLoaded', initApp);
