@@ -74,22 +74,16 @@
             margin: 0 auto;
             color: var(--current-text-color); 
             transition: color 0.6s ease-in-out;
-            padding-top: 100px; /* Hely a fix fejlécnek */
+            padding-top: 20px;
         }
 
         .header-controls {
-            position: fixed;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 16px;
-            width: auto;
-            max-width: 90%;
-            padding: 12px 24px;
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 8px;
             background: var(--current-widget-bg);
             border: 1px solid var(--current-widget-border);
             border-radius: 18px;
@@ -101,13 +95,14 @@
 
         .location-details {
             display: flex;
-            align-items: baseline;
-            gap: 12px;
-            white-space: nowrap;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            text-align: left;
         }
         .location-details h1 {
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 20px;
+            font-weight: 800;
             color: var(--current-text-color);
             margin: 0;
         }
@@ -117,19 +112,15 @@
             color: var(--current-text-muted-color);
             margin: 0;
         }
-        .location-details .last-updated {
-            font-size: 11px;
-            opacity: 0.7;
-        }
 
         #week-selector {
             background-color: rgba(0,0,0,0.2);
             color: var(--current-text-color);
             border: 1px solid var(--current-container-border-color);
             border-radius: 8px;
-            padding: 6px 12px;
+            padding: 8px 14px;
             font-family: 'Inter', sans-serif;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -142,14 +133,17 @@
             color: #F3F4F6;
         }
 
-
         .forecast-container { 
             width: 100%; 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            grid-template-columns: repeat(7, 1fr); 
             gap: 16px; 
             margin: 0 auto; 
         }
+        .forecast-container.eight-columns {
+            grid-template-columns: repeat(8, 1fr);
+        }
+
         @keyframes card-entry { 
             from { opacity: 0; transform: translateY(25px); } 
             to { opacity: 1; transform: translateY(0); } 
@@ -232,43 +226,38 @@
         .forecast-part-details p { margin: 4px 0; }
         .forecast-part-details p i { vertical-align: middle; }
 
-        @media (max-width: 900px) {
-            .main-container {
-                padding-top: 140px; /* Több hely a mobil fejlécnek */
-            }
-            .header-controls { 
-                flex-direction: column; 
-                align-items: center;
-                width: 95%; 
-                max-width: 400px;
-                gap: 12px;
-            }
-            .location-details { 
-                flex-direction: column;
-                align-items: center; 
-                text-align: center;
-                gap: 4px;
-            }
-            .forecast-container { 
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
-                gap: 12px; 
-            }
+        @media (max-width: 1400px) {
+            .forecast-container { grid-template-columns: repeat(4, 1fr); }
+            .forecast-container.eight-columns { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 800px) {
+            .forecast-container { grid-template-columns: repeat(2, 1fr); }
+            .forecast-container.eight-columns { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 500px) {
+            .header-controls { flex-direction: column; align-items: stretch; gap: 12px; }
+            .location-details { align-items: center; text-align: center; }
+            .main-container { padding-top: 150px; }
+            .forecast-container { grid-template-columns: 1fr; }
+            .forecast-container.eight-columns { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body data-theme="night">
     <div class="sky-gradient-overlay"></div>
 
-    <div class="header-controls">
-        <div class="location-details">
-            <h1>Nyíregyháza időjárása</h1>
-            <p class="date-range" id="date-range-display">Betöltés...</p>
-            <p class="last-updated" id="last-updated-time">Frissítés...</p>
-        </div>
-        <select id="week-selector" aria-label="Válasszon időszakot"></select>
-    </div>
-
     <div class="main-container">
+        <div class="header-controls">
+            <div class="location-details">
+                <h1>Nyíregyháza - Hosszú távú kilátások</h1>
+                <div>
+                    <span class="date-range" id="date-range-display">Betöltés...</span>
+                    <span class="last-updated" id="last-updated-time">Frissítés...</span>
+                </div>
+            </div>
+            <select id="week-selector" aria-label="Válasszon időszakot"></select>
+        </div>
+    
         <div class="forecast-container" id="forecast-container">
             <div class="loading-message">Előrejelzés betöltése...</div>
         </div>
@@ -487,9 +476,19 @@
         
         function handleWeekChange() {
             const weekSelector = document.getElementById('week-selector');
+            const forecastContainer = document.getElementById('forecast-container');
             const dateRangeDisplay = document.getElementById('date-range-display');
             const startIndex = parseInt(weekSelector.value, 10);
-            const daysToShow = (startIndex === 0) ? allForecastDays.slice(0, 7) : allForecastDays.slice(7);
+            const isFirstWeek = startIndex === 0;
+
+            const daysToShow = isFirstWeek ? allForecastDays.slice(0, 7) : allForecastDays.slice(7);
+
+            if (isFirstWeek) {
+                forecastContainer.classList.remove('eight-columns');
+            } else {
+                forecastContainer.classList.add('eight-columns');
+            }
+            
             if (daysToShow.length > 0) {
                 const startDate = formatForecastDate(daysToShow[0].date);
                 const endDate = formatForecastDate(daysToShow[daysToShow.length - 1].date);
