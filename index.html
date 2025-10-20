@@ -83,7 +83,7 @@
             justify-content: space-between;
             width: 100%;
             margin-bottom: 20px;
-            padding: 8px;
+            padding: 8px 24px; /* MÓDOSÍTVA: Növelt vízszintes padding */
             background: var(--current-widget-bg);
             border: 1px solid var(--current-widget-border);
             border-radius: 18px;
@@ -91,6 +91,7 @@
             -webkit-backdrop-filter: blur(20px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             transition: all 0.4s ease-in-out;
+            box-sizing: border-box; /* Biztosítja, hogy a padding ne növelje a teljes szélességet */
         }
 
         .location-details {
@@ -237,7 +238,6 @@
         @media (max-width: 500px) {
             .header-controls { flex-direction: column; align-items: stretch; gap: 12px; }
             .location-details { align-items: center; text-align: center; }
-            .main-container { padding-top: 150px; }
             .forecast-container { grid-template-columns: 1fr; }
             .forecast-container.eight-columns { grid-template-columns: 1fr; }
         }
