@@ -77,47 +77,70 @@
             padding-top: 20px;
         }
 
-        .header-controls {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+        .header-wrapper {
             width: 100%;
             margin-bottom: 24px;
-            gap: 8px;
-        }
-        
-        .title-group {
-            display: flex;
-            align-items: baseline;
-            gap: 16px;
-            flex-wrap: wrap;
+            padding: 0 4px;
+            box-sizing: border-box;
+            text-align: left;
         }
 
-        .location-details h1 {
+        .title-container {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px 16px;
+            margin-bottom: 8px;
+        }
+
+        .header-wrapper h1 {
             font-size: 24px;
-            font-weight: 800;
+            font-weight: 700;
             color: var(--current-text-color);
             margin: 0;
+            line-height: 1;
         }
-        .location-details .date-range, .location-details .last-updated {
+        .header-wrapper h1 .subtitle {
+            font-weight: 400;
+            font-size: 0.9em;
+            color: var(--current-text-muted-color);
+        }
+
+        .meta-info {
             font-size: 13px;
             font-weight: 500;
             color: var(--current-text-muted-color);
-            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 12px;
+            align-items: center;
         }
-
+        .meta-info #last-updated-time::before {
+            content: '•';
+            margin-right: 12px;
+            opacity: 0.6;
+        }
+        
         #week-selector {
-            background-color: rgba(0,0,0,0.2);
+            background-color: rgba(0,0,0,0.25);
             color: var(--current-text-color);
             border: 1px solid var(--current-container-border-color);
             border-radius: 8px;
-            padding: 6px 12px;
+            padding: 8px 14px;
             font-family: 'Inter', sans-serif;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23BCCCDC' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.6rem center;
+            background-repeat: no-repeat;
+            background-size: 1.1em 1.1em;
+            padding-right: 2.4rem;
         }
+
         #week-selector:hover {
             border-color: var(--current-icon-color);
         }
@@ -237,16 +260,14 @@
     <div class="sky-gradient-overlay"></div>
 
     <div class="main-container">
-        <div class="header-controls">
-            <div class="location-details">
-                <div class="title-group">
-                    <h1>Nyíregyháza - Hosszú távú kilátások</h1>
-                    <select id="week-selector" aria-label="Válasszon időszakot"></select>
-                </div>
-                <div>
-                    <span class="date-range" id="date-range-display">Betöltés...</span>
-                    <span class="last-updated" id="last-updated-time">Frissítés...</span>
-                </div>
+        <div class="header-wrapper">
+            <div class="title-container">
+                <h1>Nyíregyháza <span class="subtitle">távolabbi kilátások</span></h1>
+                <select id="week-selector" aria-label="Válasszon időszakot"></select>
+            </div>
+            <div class="meta-info">
+                <span id="date-range-display">Betöltés...</span>
+                <span id="last-updated-time">Frissítés...</span>
             </div>
         </div>
     
