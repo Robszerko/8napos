@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hosszú távú előrejelzés - Nyíregyháza</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Hosszú távú előrejelzés - Nyíregyháza (Google Weather)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
@@ -13,7 +13,7 @@
             --current-sky-color-bottom: #1d0f3b;
             --current-text-color: #EAEAEA;
             --current-text-muted-color: #BCCCDC;
-            --current-icon-color: #00BFFF;
+            --current-icon-color: #38bdf8;
             --current-container-border-color: rgba(56, 189, 248, 0.35);
         }
 
@@ -37,8 +37,12 @@
         body[data-theme="day"] { 
             --current-text-color: #FFFFFF; 
             --current-text-muted-color: #EAEAEA; 
-            --current-icon-color: #007AFF; 
-            --current-container-border-color: rgba(255, 255, 255, 0.15); 
+            --current-icon-color: #38bdf8; 
+            --current-container-border-color: rgba(255, 255, 255, 0.2); 
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .sky-gradient-overlay { 
@@ -56,7 +60,7 @@
             margin: 0 auto;
             color: var(--current-text-color); 
             transition: color 0.6s ease-in-out;
-            padding-top: 20px;
+            padding-top: 15px;
         }
 
         .header-wrapper {
@@ -77,14 +81,14 @@
 
         .header-wrapper h1 {
             font-size: 24px;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--current-text-color);
             margin: 0;
             line-height: 1;
         }
         .header-wrapper h1 .subtitle {
-            font-weight: 400;
-            font-size: 0.9em;
+            font-weight: 500;
+            font-size: 0.85em;
             color: var(--current-text-muted-color);
         }
 
@@ -97,17 +101,18 @@
             gap: 4px 12px;
             align-items: center;
         }
-        .meta-info #last-updated-time::before {
+        .meta-info #last-updated-time::before,
+        .meta-info #provider-badge::before {
             content: '•';
             margin-right: 12px;
             opacity: 0.6;
         }
         
         #week-selector {
-            background-color: rgba(0,0,0,0.25);
+            background-color: rgba(0,0,0,0.35);
             color: var(--current-text-color);
             border: 1px solid var(--current-container-border-color);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 8px 14px;
             font-family: 'Inter', sans-serif;
             font-size: 13px;
@@ -116,7 +121,7 @@
             transition: all 0.3s ease;
             -webkit-appearance: none;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23BCCCDC' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2338bdf8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
             background-position: right 0.6rem center;
             background-repeat: no-repeat;
             background-size: 1.1em 1.1em;
@@ -127,8 +132,8 @@
             border-color: var(--current-icon-color);
         }
         #week-selector option {
-            background-color: #374151;
-            color: #F3F4F6;
+            background-color: #1e293b;
+            color: #F8FAFC;
         }
 
         .forecast-container { 
@@ -141,13 +146,23 @@
         .forecast-container.eight-columns {
             grid-template-columns: repeat(8, 1fr);
         }
+        .forecast-container.all-days {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
 
         @keyframes card-entry { 
             from { opacity: 0; transform: translateY(25px); } 
             to { opacity: 1; transform: translateY(0); } 
         }
         
-        .loading-message { font-size: 18px; padding: 40px; grid-column: 1 / -1; }
+        .loading-message { 
+            font-size: 18px; 
+            padding: 40px; 
+            grid-column: 1 / -1; 
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
         
         /* KÁRTYA STÍLUSOK GRAFIKUS HÁTTÉRHEZ */
         .forecast-day-card { 
@@ -157,9 +172,9 @@
             border-radius: 18px; 
             background: transparent !important;
             border: 1px solid rgba(255, 255, 255, 0.2); 
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
             color: #FFFFFF; 
-            text-shadow: 0 1px 4px rgba(0,0,0,0.9); 
+            text-shadow: 0 1px 4px rgba(0,0,0,0.95); 
             transition: all 0.4s ease-in-out; 
             border-top: 6px solid var(--temp-color, var(--current-icon-color)); 
             opacity: 0; 
@@ -174,9 +189,8 @@
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            /* Biztonsági háttérszín és színátmenet, ha a kép nem töltene be, nem lesz fekete! */
-            background-color: #2b3a55; 
-            background-image: var(--bg-image), linear-gradient(to bottom, #1a202c, #2d3748);
+            background-color: var(--fallback-color, #1e293b); 
+            background-image: var(--bg-image), var(--fallback-gradient, linear-gradient(to bottom, #0f172a, #1e293b));
             background-size: cover;
             background-position: center;
             z-index: -2;
@@ -187,14 +201,14 @@
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(10, 15, 30, 0.35) 0%, rgba(10, 15, 30, 0.85) 100%);
+            background: linear-gradient(to bottom, rgba(10, 15, 30, 0.40) 0%, rgba(10, 15, 30, 0.88) 100%);
             z-index: -1;
             pointer-events: none;
         }
 
         .forecast-day-card:hover { 
             transform: translateY(-8px); 
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6); 
+            box-shadow: 0 14px 44px rgba(0,0,0,0.65); 
             border-color: var(--current-icon-color);
         }
 
@@ -203,35 +217,47 @@
         }
         
         .forecast-day-card.today { 
-            transform: scale(1.05);
+            transform: scale(1.03);
             border: 2px solid var(--current-icon-color);
             border-top-width: 6px;
         }
         .forecast-day-card.today:hover {
-            transform: translateY(-8px) scale(1.05);
+            transform: translateY(-8px) scale(1.03);
         }
-        .forecast-day-card.today .forecast-day-name, .forecast-day-card.tomorrow .forecast-day-name { 
+        .forecast-day-card.today .forecast-day-name, 
+        .forecast-day-card.tomorrow .forecast-day-name { 
             font-size: 19px; 
             font-weight: 800; 
             color: var(--current-icon-color); 
         }
 
-        .forecast-header { text-align: center; margin-bottom: 10px; }
+        .forecast-header { text-align: center; margin-bottom: 8px; }
         .forecast-day-name { font-size: 17px; font-weight: 700; }
-        .forecast-date { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8); }
-        .forecast-temps { font-size: 28px; font-weight: 800; display: flex; justify-content: center; align-items: baseline; gap: 14px; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.15); margin: 10px 0 0 0; }
-        .forecast-temp-min { font-size: 0.65em; color: rgba(255,255,255,0.7); font-weight: 500; }
+        .forecast-date { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.85); }
+        .forecast-temps { 
+            font-size: 26px; 
+            font-weight: 800; 
+            display: flex; 
+            justify-content: center; 
+            align-items: baseline; 
+            gap: 10px; 
+            padding: 10px 0; 
+            border-top: 1px solid rgba(255,255,255,0.18); 
+            margin: 8px 0 0 0; 
+        }
+        .forecast-temp-max { color: #ffffff; }
+        .forecast-temp-min { font-size: 0.72em; color: rgba(255,255,255,0.75); font-weight: 600; }
         
         .forecast-sun-details {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            color: rgba(255,255,255,0.85);
-            padding: 8px 0;
-            margin-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.9);
+            padding: 7px 0;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.18);
         }
         .forecast-sun-details > span {
             display: flex;
@@ -240,27 +266,27 @@
         .icon-combo {
             display: inline-flex;
             align-items: center;
-            margin-right: 8px;
+            margin-right: 6px;
         }
         .icon-sunrise { color: #facc15; }
         .icon-sunset { color: #f97316; }
         .icon-arrow {
             font-size: 0.7em;
-            margin-left: -5px;
+            margin-left: -4px;
             position: relative;
             color: #ffffff;
             text-shadow: 0 0 3px rgba(0,0,0,0.8);
         }
-        .icon-arrow.up { top: -3px; }
-        .icon-arrow.down { top: 3px; }
+        .icon-arrow.up { top: -2px; }
+        .icon-arrow.down { top: 2px; }
 
-        .forecast-part { margin-top: 10px; flex-grow: 1; }
-        .forecast-part:first-of-type { padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.15); }
-        .forecast-part-header { display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-        .forecast-part-header i { font-size: 1.3em; margin-right: 8px; color: var(--current-icon-color); width: 22px; text-align: center; }
-        .forecast-part-details { font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.6; text-align: center; }
-        .forecast-part-details p { margin: 4px 0; }
-        .forecast-part-details p i { vertical-align: middle; color: rgba(255,255,255,0.9); }
+        .forecast-part { margin-top: 8px; flex-grow: 1; }
+        .forecast-part:first-of-type { padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.18); }
+        .forecast-part-header { display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .forecast-part-header i { font-size: 1.25em; margin-right: 8px; color: var(--current-icon-color); width: 22px; text-align: center; }
+        .forecast-part-details { font-size: 12.5px; color: rgba(255,255,255,0.9); line-height: 1.55; text-align: center; }
+        .forecast-part-details p { margin: 3px 0; }
+        .forecast-part-details p i { vertical-align: middle; color: rgba(255,255,255,0.95); }
 
         @media (max-width: 1400px) {
             .forecast-container { grid-template-columns: repeat(4, 1fr); }
@@ -282,26 +308,29 @@
     <div class="main-container">
         <div class="header-wrapper">
             <div class="title-container">
-                <h1>Nyíregyháza <span class="subtitle">távolabbi kilátások</span></h1>
+                <h1>Nyíregyháza <span class="subtitle">hosszú távú előrejelzés</span></h1>
                 <select id="week-selector" aria-label="Válasszon időszakot"></select>
             </div>
             <div class="meta-info">
                 <span id="date-range-display">Betöltés...</span>
+                <span id="provider-badge">Google Weather API</span>
                 <span id="last-updated-time">Frissítés...</span>
             </div>
         </div>
     
         <div class="forecast-container" id="forecast-container">
-            <div class="loading-message">Előrejelzés betöltése...</div>
+            <div class="loading-message">Előrejelzés betöltése a Google szervereiről...</div>
         </div>
     </div>
     
     <script>
-        const weatherComApiKey = 'e1f10a1e78da46f5b10a1e78da96f525';
+        // GOOGLE MAPS PLATFORM WEATHER API KULCS ÉS BEÁLLÍTÁSOK
+        const googleWeatherApiKey = 'AIzaSyAatzTk8ob_9p7ieBHxYQaH68yBK94z5kE';
         const NYIREGYHAZA_COORDS = { lat: 47.9550, lon: 21.7160 };
         const NO_DATA_STRING = 'N/A';
-        const REFRESH_INTERVAL_MS = 15 * 60 * 1000; 
-        let allForecastDays =[];
+        // 40 PERCES AUTOMATIKUS FRISSÍTÉS
+        const REFRESH_INTERVAL_MS = 40 * 60 * 1000; 
+        let allForecastDays = [];
 
         const SKY_PALETTE = {
             DEEP_NIGHT: { top: '#0a0215', bottom: '#1d0f3b' },
@@ -317,78 +346,192 @@
             EVENING:    { top: '#0f0e34', bottom: '#483475' }
         };
 
-        // KIBŐVÍTETT, PONTOSABB SZÓTÁR ÉS BIZTONSÁGOS KÉP ID-K
-        function getWeatherImageUrlByPhrase(phrase, isDay) {
-            const defaultDay = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=600&auto=format&fit=crop'; // Tiszta kék ég
-            const defaultNight = 'https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?q=80&w=600&auto=format&fit=crop'; // Csillagos ég
+        // KETTŐS INTELLIGENS HÁTTÉRKÉP-SZÓTÁR (GOOGLE TÍPUSKÓD ÉS MAGYAR LEÍRÁS EGYÜTTES VIZSGÁLATA)
+        function getWeatherBackground(phrase, conditionType, isDay) {
+            const p = (phrase || '').toLowerCase();
+            const t = (conditionType || '').toUpperCase();
 
-            if (!phrase) return isDay ? defaultDay : defaultNight;
-            
-            const p = phrase.toLowerCase();
-            
-            // 1. ZIVATAR / VIHAR (Thunderstorms, storms)
-            if (p.includes('zivatar') || p.includes('villám') || p.includes('vihar') && !p.includes('szél')) 
-                return 'https://images.unsplash.com/photo-1561485132-59468cd0b553?q=80&w=600&auto=format&fit=crop'; // Sötét vihar, villám
-                
-            // 2. TÉLI VEGYES CSAPADÉK (Wintry Mix, Sleet, Freezing Rain)
-            if (p.includes('ónos') || p.includes('havas eső') || p.includes('fagyott') || p.includes('jég') || p.includes('dara')) 
-                return 'https://images.unsplash.com/photo-1478265409131-1f65c88f965c?q=80&w=600&auto=format&fit=crop'; // Fagyott ágak, jég
-                
-            // 3. HAVAZÁS (Snow, flurries)
-            if (p.includes('hó') || p.includes('havaz') || p.includes('szállingóz') || p.includes('hózápor') || p.includes('hófúvás')) 
-                return 'https://images.unsplash.com/photo-1483664852095-d6cd6870ae46?q=80&w=600&auto=format&fit=crop'; // Sűrű hóesés
-                
-            // 4. ESŐ / ZÁPOR (Rain, showers, drizzle)
-            if (p.includes('zápor') || p.includes('felhőszakadás') || p.includes('heves eső')) 
-                return 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=600&auto=format&fit=crop'; // Intenzív esőzés
-            if (p.includes('eső') || p.includes('szitál') || p.includes('csapadék')) 
-                return 'https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?q=80&w=600&auto=format&fit=crop'; // Sima esőcseppek üvegen
-                
-            // 5. KÖD / PÁRA / SZMOG (Fog, mist)
-            if (p.includes('köd') || p.includes('pára') || p.includes('szmog') || p.includes('füst')) 
-                return 'https://images.unsplash.com/photo-1480726685458-71e98d9cc9ec?q=80&w=600&auto=format&fit=crop'; // Ködös fák
-                
-            // 6. SZÉL (Windy fokozatok)
-            if (p.includes('viharos szél') || p.includes('orkán') || p.includes('erős szél')) 
-                return 'https://images.unsplash.com/photo-1476108620066-50587d46c100?q=80&w=600&auto=format&fit=crop'; // Brutálisan hajló fák (viharos)
-            if (p.includes('szél') || p.includes('szeles')) 
-                return 'https://images.unsplash.com/photo-1505672678657-cc7037095e60?q=80&w=600&auto=format&fit=crop'; // Lágyabban fújó szél a tájban
-                
-            // 7. FELHŐZET
-            // "Borult" (Overcast - teljesen szürke ég)
-            if (p.includes('borult')) 
-                return 'https://images.unsplash.com/photo-1499956827185-0d63ee78a910?q=80&w=600&auto=format&fit=crop';
-                
-            // "Többnyire / Túlnyomóan / Erősen felhős" (Mostly Cloudy - vastag felhők, kevés kék ég)
-            if (p.includes('többnyire felhős') || p.includes('túlnyomóan felhős') || p.includes('túlnyomórészt felhős') || p.includes('erősen felhős')) 
-                return 'https://images.unsplash.com/photo-1534088568595-a066f410cbda?q=80&w=600&auto=format&fit=crop';
-                
-            // "Részben / Változóan / Kissé felhős" (Partly Cloudy - kék ég sok látványos gomolyfelhővel)
-            if (p.includes('részben') || p.includes('változóan') || p.includes('kissé') || p.includes('kevés') || p.includes('fátyol') || p.includes('felhőátvonulás')) {
-                return isDay 
-                    ? 'https://images.unsplash.com/photo-1418253109916-24e52613edaa?q=80&w=600&auto=format&fit=crop'
-                    : 'https://images.unsplash.com/photo-1505322022379-7d13769e2b14?q=80&w=600&auto=format&fit=crop'; // Éjjel hold felhőkkel
+            // 1. ZIVATAR / VIHAR (Thunderstorm, lightning)
+            if (t.includes('THUNDER') || t.includes('STORM') || t.includes('LIGHTNING') || p.includes('zivatar') || p.includes('villám') || (p.includes('vihar') && !p.includes('szél'))) {
+                return {
+                    img: 'https://images.unsplash.com/photo-1605727216801-e27ce1d0cc28?q=80&w=700&auto=format&fit=crop',
+                    gradient: 'linear-gradient(to bottom, #1e1b4b, #0f172a)',
+                    color: '#1e1b4b'
+                };
             }
-            
-            // "Felhős" (Általános, ha nem volt specifikálva)
-            if (p.includes('felhős') || p.includes('felhőzet')) 
-                return 'https://images.unsplash.com/photo-1501630834273-4b5604d2ee31?q=80&w=600&auto=format&fit=crop';
-                
-            // 8. NAPOS / TISZTA IDŐ FOKOZATOK
-            // "Többnyire / Túlnyomóan napos / Többnyire derült" (Mostly Sunny / Clear - van rajta 1-2 kis felhő)
-            if (p.includes('többnyire napos') || p.includes('túlnyomóan napos') || p.includes('többnyire derült') || p.includes('túlnyomórészt napos')) {
-                return isDay 
-                    ? 'https://images.unsplash.com/photo-1601297183305-6df142704ea2?q=80&w=600&auto=format&fit=crop'
-                    : 'https://images.unsplash.com/photo-1534447677719-401bf533f28d?q=80&w=600&auto=format&fit=crop';
+
+            // 2. HAVAZÁS / HÓVIHAR (Snow, blizzard)
+            if (t.includes('SNOW') || t.includes('BLIZZARD') || p.includes('hó') || p.includes('havaz') || p.includes('szállingóz') || p.includes('hózápor') || p.includes('hófúvás')) {
+                return {
+                    img: isDay
+                        ? 'https://images.unsplash.com/photo-1491002052546-bf38f186af56?q=80&w=700&auto=format&fit=crop'
+                        : 'https://images.unsplash.com/photo-1517299321929-30a7063a569c?q=80&w=700&auto=format&fit=crop',
+                    gradient: 'linear-gradient(to bottom, #334155, #1e293b)',
+                    color: '#334155'
+                };
             }
-            
-            // "Napos / Verőfényes / Tiszta / Derült" (Sunny - TELJESEN tiszta kék/csillagos ég)
-            if (p.includes('napos') || p.includes('verőfényes') || p.includes('derült') || p.includes('tiszta')) {
-                return isDay ? defaultDay : defaultNight;
+
+            // 3. TÉLI VEGYES CSAPADÉK / Ónos eső / Havas eső (Sleet, Freezing rain, Ice)
+            if (t.includes('SLEET') || t.includes('FREEZING') || t.includes('ICE') || p.includes('ónos') || p.includes('havas eső') || p.includes('fagyott') || p.includes('jégdara')) {
+                return {
+                    img: 'https://images.unsplash.com/photo-1478265409131-1f65c88f965c?q=80&w=700&auto=format&fit=crop',
+                    gradient: 'linear-gradient(to bottom, #1e293b, #0f172a)',
+                    color: '#1e293b'
+                };
             }
+
+            // 4. HEVES ESŐZÉS / FELHŐSZAKADÁS / ZÁPORESŐ (Heavy rain, Showers)
+            if (t.includes('HEAVY_RAIN') || t.includes('TORRENTIAL') || t.includes('RAIN_SHOWERS') || t.includes('SHOWER') || p.includes('zápor') || p.includes('felhőszakadás') || p.includes('heves eső')) {
+                return {
+                    img: isDay
+                        ? 'https://images.unsplash.com/photo-1519692933481-e162a57d6721?q=80&w=700&auto=format&fit=crop'
+                        : 'https://images.unsplash.com/photo-1501999635878-71cb5379c2d8?q=80&w=700&auto=format&fit=crop',
+                    gradient: 'linear-gradient(to bottom, #1e293b, #0f172a)',
+                    color: '#1e293b'
+                };
+            }
+
+            // 5. NORMÁL ESŐ / SZITÁLÁS (Rain, Light rain, Drizzle)
+            if (t.includes('RAIN') || t.includes('DRIZZLE') || p.includes('eső') || p.includes('szitál') || p.includes('csapadék')) {
+                return {
+                    img: isDay
+                        ? 'https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?q=80&w=700&auto=format&fit=crop'
+                        : 'https://images.unsplash.com/photo-1508873696983-2df5293cb395?q=80&w=700&auto=format&fit=crop',
+                    gradient: 'linear-gradient(to bottom, #334155, #0f172a)',
+                    color: '#334155'
+                };
+            }
+
+            // 6. KÖD / PÁRA / SZMOG (Fog, Mist, Haze)
+            if (t.includes('FOG') || t.includes('HAZE') || t.includes('SMOKE') || t.includes('DUST') || p.includes('köd') || p.includes('pára') || p.includes('szmog') || p.includes('füst')) {
+                return {
+                    img: 'https://images.unsplash.com/photo-1487621167305-5d248087c724?q=80&w=700&auto=format&fit=crop',
+                    gradient: 'linear-gradient(to bottom, #475569, #1e293b)',
+                    color: '#475569'
+                };
+            }
+
+            // 7. SZÉLES IDŐ / VIHAROS SZÉL (Windy)
+            if (t.includes('WIND') || p.includes('szél') || p.includes('szeles') || p.includes('viharos szél') || p.includes('orkán')) {
+                return {
+                    img: 'https://images.unsplash.com/photo-1505672678657-cc7037095e60?q=80&w=700&auto=format&fit=crop',
+                    gradient: 'linear-gradient(to bottom, #334155, #1e293b)',
+                    color: '#334155'
+                };
+            }
+
+            // 8. BORULT ÉG / TELJESEN SZÜRKE FELHŐZET (Overcast, Cloudy)
+            if (t === 'CLOUDY' || p.includes('borult')) {
+                return {
+                    img: isDay
+                        ? 'https://images.unsplash.com/photo-1499956827185-0d63ee78a910?q=80&w=700&auto=format&fit=crop'
+                        : 'https://images.unsplash.com/photo-1509114397022-ed747cca3f65?q=80&w=700&auto=format&fit=crop',
+                    gradient: 'linear-gradient(to bottom, #475569, #0f172a)',
+                    color: '#475569'
+                };
+            }
+
+            // 9. ERŐSEN / TÖBBNYIRE FELHŐS (Mostly cloudy)
+            if (t.includes('MOSTLY_CLOUDY') || p.includes('erősen felhős') || p.includes('többnyire felhős') || p.includes('túlnyomóan felhős')) {
+                return {
+                    img: isDay
+                        ? 'https://images.unsplash.com/photo-1534088568595-a066f410cbda?q=80&w=700&auto=format&fit=crop'
+                        : 'https://images.unsplash.com/photo-1505322022379-7d13769e2b14?q=80&w=700&auto=format&fit=crop',
+                    gradient: 'linear-gradient(to bottom, #334155, #1e293b)',
+                    color: '#334155'
+                };
+            }
+
+            // 10. RÉSZBEN / VÁLTOZÓAN FELHŐS (Partly cloudy - gomolyfelhős ég)
+            if (t.includes('PARTLY_CLOUDY') || p.includes('részben') || p.includes('változóan') || p.includes('kissé') || p.includes('fátyol') || p.includes('felhő')) {
+                return {
+                    img: isDay
+                        ? 'https://images.unsplash.com/photo-1595865749889-b37a53f07bc4?q=80&w=700&auto=format&fit=crop'
+                        : 'https://images.unsplash.com/photo-1505322022379-7d13769e2b14?q=80&w=700&auto=format&fit=crop',
+                    gradient: 'linear-gradient(to bottom, #0284c7, #0f172a)',
+                    color: '#0284c7'
+                };
+            }
+
+            // 11. TÖBBNYIRE NAPOS / TÖBBNYIRE DERÜLT (Mostly sunny, Mostly clear)
+            if (t.includes('MOSTLY_CLEAR') || t.includes('MOSTLY_SUNNY') || p.includes('többnyire napos') || p.includes('többnyire derült')) {
+                return {
+                    img: isDay
+                        ? 'https://images.unsplash.com/photo-1601297183305-6df142704ea2?q=80&w=700&auto=format&fit=crop'
+                        : 'https://images.unsplash.com/photo-1534447677719-401bf533f28d?q=80&w=700&auto=format&fit=crop',
+                    gradient: 'linear-gradient(to bottom, #0369a1, #0f172a)',
+                    color: '#0369a1'
+                };
+            }
+
+            // 12. DERÜLT / NAPOS / TISZTA ÉGBOLT (Sunny, Clear sky)
+            if (t.includes('CLEAR') || t.includes('SUNNY') || p.includes('napos') || p.includes('derült') || p.includes('tiszta') || p.includes('verőfényes')) {
+                return {
+                    img: isDay
+                        ? 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=700&auto=format&fit=crop'
+                        : 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=700&auto=format&fit=crop',
+                    gradient: isDay ? 'linear-gradient(to bottom, #0284c7, #0369a1)' : 'linear-gradient(to bottom, #090a1a, #1e1b4b)',
+                    color: isDay ? '#0284c7' : '#090a1a'
+                };
+            }
+
+            // 13. ALAPÉRTELMEZETT TARTALÉK
+            return {
+                img: isDay
+                    ? 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=700&auto=format&fit=crop'
+                    : 'https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?q=80&w=700&auto=format&fit=crop',
+                gradient: 'linear-gradient(to bottom, #1e293b, #0f172a)',
+                color: '#1e293b'
+            };
+        }
+
+        // GOOGLE WEATHER ÁLLAPOT TÍPUSOK LEKÉPEZÉSE FONTAWESOME IKONOKRA
+        function mapGoogleConditionToFontAwesome(conditionType, dayOrNight) {
+            const isDay = dayOrNight === 'D';
+            const type = String(conditionType || '').toUpperCase();
             
-            // ALAPÉRTELMEZETT (Ha ismeretlen szó érkezik)
-            return isDay ? defaultDay : defaultNight;
+            if (type.includes('THUNDER') || type.includes('STORM') || type.includes('LIGHTNING')) {
+                return 'fas fa-cloud-bolt';
+            }
+            if (type.includes('BLIZZARD') || type.includes('HEAVY_SNOW') || type.includes('SNOW')) {
+                return 'fas fa-snowflake';
+            }
+            if (type.includes('SLEET') || type.includes('ICE') || type.includes('FREEZING_RAIN')) {
+                return 'fas fa-cloud-meatball';
+            }
+            if (type.includes('HEAVY_RAIN') || type.includes('TORRENTIAL')) {
+                return 'fas fa-cloud-showers-heavy';
+            }
+            if (type.includes('RAIN') || type.includes('SHOWER') || type.includes('DRIZZLE')) {
+                return isDay ? 'fas fa-cloud-sun-rain' : 'fas fa-cloud-moon-rain';
+            }
+            if (type.includes('FOG') || type.includes('HAZE') || type.includes('SMOKE') || type.includes('DUST')) {
+                return 'fas fa-smog';
+            }
+            if (type.includes('WIND')) {
+                return 'fas fa-wind';
+            }
+            if (type.includes('CLOUDY') || type.includes('MOSTLY_CLOUDY')) {
+                return 'fas fa-cloud';
+            }
+            if (type.includes('PARTLY_CLOUDY') || type.includes('MOSTLY_CLEAR') || type.includes('MOSTLY_SUNNY')) {
+                return isDay ? 'fas fa-cloud-sun' : 'fas fa-cloud-moon';
+            }
+            if (type.includes('CLEAR') || type.includes('SUNNY')) {
+                return isDay ? 'fas fa-sun' : 'fas fa-moon';
+            }
+            return isDay ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // UV INDEX KATEGÓRIA FORDÍTÁS
+        function getUvDescription(uvIndex) {
+            if (uvIndex === null || typeof uvIndex === 'undefined') return 'N/A';
+            const uv = Number(uvIndex);
+            if (uv < 3) return 'Alacsony';
+            if (uv < 6) return 'Mérsékelt';
+            if (uv < 8) return 'Magas';
+            if (uv < 11) return 'Nagyon magas';
+            return 'Extrém';
         }
 
         function formatLastUpdated(date) {
@@ -396,6 +539,7 @@
             return `Frissítve: ${new Intl.DateTimeFormat('hu-HU', options).format(date)}`;
         }
 
+        // TIZEDES PONTOSSÁGÚ FORMÁZÓ
         function formatValue(value, unit = '', precision = 1, notAvailableString = NO_DATA_STRING) {
             if (value === null || typeof value === 'undefined' || (typeof value === 'number' && isNaN(value))) return notAvailableString;
             if (typeof value === 'number') return `${value.toFixed(precision)}${unit}`;
@@ -403,8 +547,8 @@
         }
         
         function formatPrecipitation(value) {
-            if (value === null || typeof value === 'undefined' || isNaN(value)) return '0 mm';
-            return `${value.toFixed(1)} mm`;
+            if (value === null || typeof value === 'undefined' || isNaN(value)) return '0.0 mm';
+            return `${Number(value).toFixed(1)} mm`;
         }
 
         function formatForecastDate(isoDateString) {
@@ -424,14 +568,8 @@
         function degreesToCompass(degrees) {
             if (degrees === null || typeof degrees === 'undefined') return '-';
             degrees = (parseFloat(degrees) % 360 + 360) % 360;
-            const directions =["É", "ÉÉK", "ÉK", "KÉK", "K", "KDK", "DK", "DDK", "D", "DDNY", "DNY", "NYDNY", "NY", "NYÉNY", "ÉNY", "ÉÉNY"];
+            const directions = ["É", "ÉÉK", "ÉK", "KÉK", "K", "KDK", "DK", "DDK", "D", "DDNY", "DNY", "NYDNY", "NY", "NYÉNY", "ÉNY", "ÉÉNY"];
             return directions[Math.round(degrees / 22.5) % 16];
-        }
-
-        function mapTwcIconToFontAwesome(iconCode, dayOrNight) {
-            const isDay = dayOrNight === 'D';
-            const iconMap = { 32: 'fas fa-sun', 36: 'fas fa-sun', 31: 'fas fa-moon', 33: 'fas fa-moon', 34: isDay ? 'fas fa-sun' : 'fas fa-cloud-moon', 29: isDay ? 'fas fa-cloud-sun' : 'fas fa-cloud-moon', 30: isDay ? 'fas fa-cloud-sun' : 'fas fa-cloud-moon', 27: 'fas fa-cloud', 28: 'fas fa-cloud', 26: 'fas fa-cloud', 11: 'fas fa-cloud-showers-heavy', 12: 'fas fa-cloud-showers-heavy', 40: 'fas fa-cloud-showers-heavy', 39: isDay ? 'fas fa-cloud-sun-rain' : 'fas fa-cloud-moon-rain', 45: isDay ? 'fas fa-cloud-sun-rain' : 'fas fa-cloud-moon-rain', 3: 'fas fa-cloud-bolt', 4: 'fas fa-cloud-bolt', 37: 'fas fa-cloud-bolt', 38: 'fas fa-cloud-bolt', 47: 'fas fa-cloud-bolt', 5: 'fas fa-snowflake', 6: 'fas fa-snowflake', 7: 'fas fa-snowflake', 8: 'fas fa-snowflake', 10: 'fas fa-cloud-sleet', 18: 'fas fa-smog', 13: 'fas fa-snowflake', 14: 'fas fa-snowflake', 15: 'fas fa-snowflake', 16: 'fas fa-snowflake', 41: 'fas fa-snowflake', 42: 'fas fa-snowflake', 43: 'fas fa-snowflake', 46: 'fas fa-snowflake', 9: 'fas fa-cloud-rain', 19: 'fas fa-smog', 20: 'fas fa-smog', 21: 'fas fa-smog', 22: 'fas fa-smog', 23: 'fas fa-wind', 24: 'fas fa-wind' };
-            return iconMap[iconCode] || 'fas fa-question-circle';
         }
 
         function updateDynamicSky() {
@@ -477,25 +615,79 @@
             document.documentElement.style.setProperty('--current-sky-color-top', currentPalette.top);
             document.documentElement.style.setProperty('--current-sky-color-bottom', currentPalette.bottom);
         }
-        
+
+        // GOOGLE WEATHER API ADATLEKÉRÉS
         async function fetchDailyForecastData(lat, lon) {
-            const url = `https://api.weather.com/v3/wx/forecast/daily/15day?geocode=${lat},${lon}&format=json&units=m&language=hu-HU&apiKey=${weatherComApiKey}`;
+            const url = `https://weather.googleapis.com/v1/forecast/days:lookup?key=${googleWeatherApiKey}&location.latitude=${lat}&location.longitude=${lon}&days=10&pageSize=10&unitsSystem=METRIC&languageCode=hu`;
             try {
                 const response = await fetch(url);
-                if (!response.ok) throw new Error(`API Hiba: ${response.status}`);
+                if (!response.ok) throw new Error(`Google Weather API Hiba: ${response.status}`);
                 const data = await response.json();
-                if (!data || !data.dayOfWeek) throw new Error('Hiányos adatok.');
-                const forecastDays =[];
-                for(let i = 0; i < 15; i++) {
-                    if (!data.dayOfWeek?.[i]) break;
-                    
-                    const dayPartData = data.daypart?.[0] ? { phrase: data.daypart[0].wxPhraseLong?.[i*2], precipChance: data.daypart[0].precipChance?.[i*2], windSpeed: data.daypart[0].windSpeed?.[i*2], windDir: data.daypart[0].windDirection?.[i*2], uvIndex: data.daypart[0].uvIndex?.[i*2], uvDescription: data.daypart[0].uvDescription?.[i*2], iconCode: data.daypart[0].iconCode?.[i*2], dayOrNight: data.daypart[0].dayOrNight?.[i*2], humidity: data.daypart[0].relativeHumidity?.[i*2], qpf: data.daypart[0].qpf?.[i*2], windGust: data.daypart[0].windGust?.[i*2] } : null;
-                    const nightPartData = data.daypart?.[0] ? { phrase: data.daypart[0].wxPhraseLong?.[i*2+1], precipChance: data.daypart[0].precipChance?.[i*2+1], windSpeed: data.daypart[0].windSpeed?.[i*2+1], windDir: data.daypart[0].windDirection?.[i*2+1], iconCode: data.daypart[0].iconCode?.[i*2+1], dayOrNight: data.daypart[0].dayOrNight?.[i*2+1], humidity: data.daypart[0].relativeHumidity?.[i*2+1], qpf: data.daypart[0].qpf?.[i*2+1], windGust: data.daypart[0].windGust?.[i*2+1] } : null;
-
-                    forecastDays.push({ dayName: data.dayOfWeek[i], date: data.validTimeLocal[i], tempMax: data.temperatureMax[i], tempMin: data.temperatureMin[i], dayPart: dayPartData, nightPart: nightPartData, sunrise: data.sunriseTimeLocal?.[i], sunset: data.sunsetTimeLocal?.[i] });
+                if (!data || !data.forecastDays || data.forecastDays.length === 0) {
+                    throw new Error('Hiányos Google előrejelzési adatok.');
                 }
+
+                const forecastDays = [];
+                const daysOfWeekHu = ['Vasárnap', 'Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat'];
+
+                for (let i = 0; i < data.forecastDays.length; i++) {
+                    const item = data.forecastDays[i];
+                    
+                    let dateObj;
+                    if (item.displayDate && item.displayDate.year) {
+                        dateObj = new Date(item.displayDate.year, item.displayDate.month - 1, item.displayDate.day, 12, 0, 0);
+                    } else if (item.interval && item.interval.startTime) {
+                        dateObj = new Date(item.interval.startTime);
+                    } else {
+                        continue;
+                    }
+
+                    const dayName = daysOfWeekHu[dateObj.getDay()];
+                    const dateIso = dateObj.toISOString();
+
+                    const dayPartData = item.daytimeForecast ? {
+                        phrase: item.daytimeForecast.weatherCondition?.description?.text || '',
+                        precipChance: item.daytimeForecast.precipitation?.probability?.percent ?? 0,
+                        qpf: item.daytimeForecast.precipitation?.qpf?.quantity ?? 0,
+                        windSpeed: item.daytimeForecast.wind?.speed?.value,
+                        windGust: item.daytimeForecast.wind?.gust?.value,
+                        windDir: item.daytimeForecast.wind?.direction?.degrees,
+                        humidity: item.daytimeForecast.relativeHumidity,
+                        uvIndex: item.daytimeForecast.uvIndex,
+                        uvDescription: getUvDescription(item.daytimeForecast.uvIndex),
+                        iconCode: item.daytimeForecast.weatherCondition?.type || '',
+                        dayOrNight: 'D'
+                    } : null;
+
+                    const nightPartData = item.nighttimeForecast ? {
+                        phrase: item.nighttimeForecast.weatherCondition?.description?.text || '',
+                        precipChance: item.nighttimeForecast.precipitation?.probability?.percent ?? 0,
+                        qpf: item.nighttimeForecast.precipitation?.qpf?.quantity ?? 0,
+                        windSpeed: item.nighttimeForecast.wind?.speed?.value,
+                        windGust: item.nighttimeForecast.wind?.gust?.value,
+                        windDir: item.nighttimeForecast.wind?.direction?.degrees,
+                        humidity: item.nighttimeForecast.relativeHumidity,
+                        iconCode: item.nighttimeForecast.weatherCondition?.type || '',
+                        dayOrNight: 'N'
+                    } : null;
+
+                    forecastDays.push({
+                        dayName: dayName,
+                        date: dateIso,
+                        tempMax: item.maxTemperature?.degrees,
+                        tempMin: item.minTemperature?.degrees,
+                        dayPart: dayPartData,
+                        nightPart: nightPartData,
+                        sunrise: item.sunEvents?.sunriseTime,
+                        sunset: item.sunEvents?.sunsetTime
+                    });
+                }
+
                 return { forecastDays };
-            } catch (error) { console.error(`Adatlekérési hiba: ${error.message}`); throw error; }
+            } catch (error) {
+                console.error(`Google Weather hiba: ${error.message}`);
+                throw error;
+            }
         }
         
         function getTemperatureColor(temp) {
@@ -507,7 +699,7 @@
         function renderForecastData(daysToRender) {
             const forecastContainerEl = document.getElementById('forecast-container');
             if (!forecastContainerEl || !daysToRender || daysToRender.length === 0) {
-                if(forecastContainerEl) forecastContainerEl.innerHTML = '<div class="loading-message">Nincsenek megjeleníthető adatok.</div>';
+                if (forecastContainerEl) forecastContainerEl.innerHTML = '<div class="loading-message">Nincsenek megjeleníthető adatok.</div>';
                 return;
             }
 
@@ -521,62 +713,71 @@
             daysToRender.forEach((day, index) => {
                 if (!day.dayName || day.tempMax == null || day.tempMin == null) return;
                 const forecastDateStr = new Date(day.date).toISOString().slice(0, 10);
-                let specialClass = ''; let dayLabel = day.dayName;
+                let specialClass = ''; 
+                let dayLabel = day.dayName;
                 
                 if (forecastDateStr === todayDateStr) { specialClass = 'today'; dayLabel = 'Ma'; } 
                 else if (forecastDateStr === tomorrowDateStr) { specialClass = 'tomorrow'; dayLabel = 'Holnap'; }
                 
                 const tempColor = getTemperatureColor(day.tempMax);
 
+                // ÉGKÉP MEGHATÁROZÁSA A HÁTTÉRKÉPHEZ (NAPPAL ELSŐBBSÉG, HA NINCS, AKKOR ÉJJEL)
                 let mainPhrase = '';
+                let conditionType = '';
                 let isDayForImage = true;
                 
-                if (day.dayPart && day.dayPart.phrase !== null && day.dayPart.phrase !== undefined) {
-                    mainPhrase = day.dayPart.phrase;
+                if (day.dayPart && (day.dayPart.phrase || day.dayPart.iconCode)) {
+                    mainPhrase = day.dayPart.phrase || '';
+                    conditionType = day.dayPart.iconCode || '';
                     isDayForImage = true;
-                } else if (day.nightPart && day.nightPart.phrase !== null && day.nightPart.phrase !== undefined) {
-                    mainPhrase = day.nightPart.phrase;
+                } else if (day.nightPart && (day.nightPart.phrase || day.nightPart.iconCode)) {
+                    mainPhrase = day.nightPart.phrase || '';
+                    conditionType = day.nightPart.iconCode || '';
                     isDayForImage = false;
                 }
                 
-                const bgImageUrl = getWeatherImageUrlByPhrase(mainPhrase, isDayForImage);
+                // Pontos háttérképadatok kinyerése
+                const bgData = getWeatherBackground(mainPhrase, conditionType, isDayForImage);
 
-                const dayWindText = day.dayPart ? `${degreesToCompass(day.dayPart.windDir)} ${formatValue(day.dayPart.windSpeed, ' km/h', 0)} ${day.dayPart.windGust ? `(lökés ${formatValue(day.dayPart.windGust, '', 0)})` : ''}` : NO_DATA_STRING;
-                const nightWindText = day.nightPart ? `${degreesToCompass(day.nightPart.windDir)} ${formatValue(day.nightPart.windSpeed, ' km/h', 0)} ${day.nightPart.windGust ? `(lökés ${formatValue(day.nightPart.windGust, '', 0)})` : ''}` : NO_DATA_STRING;
+                const dayWindText = day.dayPart ? `${degreesToCompass(day.dayPart.windDir)} ${formatValue(day.dayPart.windSpeed, ' km/h', 1)} ${day.dayPart.windGust ? `(lökés ${formatValue(day.dayPart.windGust, ' km/h', 1)})` : ''}` : NO_DATA_STRING;
+                const nightWindText = day.nightPart ? `${degreesToCompass(day.nightPart.windDir)} ${formatValue(day.nightPart.windSpeed, ' km/h', 1)} ${day.nightPart.windGust ? `(lökés ${formatValue(day.nightPart.windGust, ' km/h', 1)})` : ''}` : NO_DATA_STRING;
 
-                forecastHTML += `<div class="forecast-day-card ${specialClass}" style="--temp-color: ${tempColor}; --day-index: ${index}; --bg-image: url('${bgImageUrl}');">
+                forecastHTML += `<div class="forecast-day-card ${specialClass}" style="--temp-color: ${tempColor}; --day-index: ${index}; --bg-image: url('${bgData.img}'); --fallback-gradient: ${bgData.gradient}; --fallback-color: ${bgData.color};">
                     <div class="forecast-header">
                         <div class="forecast-day-name">${dayLabel}</div>
                         <div class="forecast-date">${formatForecastDate(day.date)}</div>
                     </div>
-                    <div class="forecast-temps"><span class="forecast-temp-max">${formatValue(day.tempMax, '°', 0, '--')}</span><span class="forecast-temp-min">${formatValue(day.tempMin, '°', 0, '--')}</span></div>
+                    <div class="forecast-temps mono">
+                        <span class="forecast-temp-max">${formatValue(day.tempMax, '°', 1, '--')}</span>
+                        <span class="forecast-temp-min">${formatValue(day.tempMin, '°', 1, '--')}</span>
+                    </div>
                     
-                    <div class="forecast-sun-details">
+                    <div class="forecast-sun-details mono">
                         <span><span class="icon-combo"><i class="fas fa-sun icon-sunrise"></i><i class="fas fa-arrow-up icon-arrow up"></i></span>${formatTime(day.sunrise)}</span>
                         <span><span class="icon-combo"><i class="fas fa-sun icon-sunset"></i><i class="fas fa-arrow-down icon-arrow down"></i></span>${formatTime(day.sunset)}</span>
                     </div>`;
                 
                 if (day.dayPart) {
                     forecastHTML += `<div class="forecast-part">
-                        <div class="forecast-part-header"><i class="${mapTwcIconToFontAwesome(day.dayPart.iconCode, day.dayPart.dayOrNight)}"></i>Nappal</div>
+                        <div class="forecast-part-header"><i class="${mapGoogleConditionToFontAwesome(day.dayPart.iconCode, 'D')}"></i>Nappal</div>
                         <div class="forecast-part-details">
-                            <p>${day.dayPart.phrase || NO_DATA_STRING}</p>
-                            <p><i class="fas fa-cloud-showers-heavy" style="width:14px; text-align:center; margin-right:4px;"></i>Csap.: ${formatValue(day.dayPart.precipChance, '%', 0)} (${formatPrecipitation(day.dayPart.qpf)})</p>
-                            <p><i class="fas fa-wind" style="width:14px; text-align:center; margin-right:4px;"></i>Szél: ${dayWindText}</p>
-                            <p><i class="fas fa-tint" style="width:14px; text-align:center; margin-right:4px;"></i>Pára: ${formatValue(day.dayPart.humidity, '%', 0)}</p>
-                            <p><i class="fas fa-sun" style="width:14px; text-align:center; margin-right:4px;"></i>UV: ${formatValue(day.dayPart.uvIndex, '', 0)} (${day.dayPart.uvDescription || 'N/A'})</p>
+                            <p><b>${day.dayPart.phrase || NO_DATA_STRING}</b></p>
+                            <p><i class="fas fa-cloud-showers-heavy" style="width:14px; text-align:center; margin-right:4px;"></i>Csap.: <span class="mono">${formatValue(day.dayPart.precipChance, '%', 0)}</span> (<span class="mono">${formatPrecipitation(day.dayPart.qpf)}</span>)</p>
+                            <p><i class="fas fa-wind" style="width:14px; text-align:center; margin-right:4px;"></i>Szél: <span class="mono">${dayWindText}</span></p>
+                            <p><i class="fas fa-tint" style="width:14px; text-align:center; margin-right:4px;"></i>Pára: <span class="mono">${formatValue(day.dayPart.humidity, '%', 0)}</span></p>
+                            <p><i class="fas fa-sun" style="width:14px; text-align:center; margin-right:4px;"></i>UV: <span class="mono">${formatValue(day.dayPart.uvIndex, '', 1)}</span> (${day.dayPart.uvDescription || 'N/A'})</p>
                         </div>
                     </div>`;
                 }
 
                 if (day.nightPart) {
                     forecastHTML += `<div class="forecast-part">
-                        <div class="forecast-part-header"><i class="${mapTwcIconToFontAwesome(day.nightPart.iconCode, day.nightPart.dayOrNight)}"></i>Éjjel</div>
+                        <div class="forecast-part-header"><i class="${mapGoogleConditionToFontAwesome(day.nightPart.iconCode, 'N')}"></i>Éjjel</div>
                         <div class="forecast-part-details">
-                            <p>${day.nightPart.phrase || NO_DATA_STRING}</p>
-                            <p><i class="fas fa-cloud-showers-heavy" style="width:14px; text-align:center; margin-right:4px;"></i>Csap.: ${formatValue(day.nightPart.precipChance, '%', 0)} (${formatPrecipitation(day.nightPart.qpf)})</p>
-                            <p><i class="fas fa-wind" style="width:14px; text-align:center; margin-right:4px;"></i>Szél: ${nightWindText}</p>
-                            <p><i class="fas fa-tint" style="width:14px; text-align:center; margin-right:4px;"></i>Pára: ${formatValue(day.nightPart.humidity, '%', 0)}</p>
+                            <p><b>${day.nightPart.phrase || NO_DATA_STRING}</b></p>
+                            <p><i class="fas fa-cloud-showers-heavy" style="width:14px; text-align:center; margin-right:4px;"></i>Csap.: <span class="mono">${formatValue(day.nightPart.precipChance, '%', 0)}</span> (<span class="mono">${formatPrecipitation(day.nightPart.qpf)}</span>)</p>
+                            <p><i class="fas fa-wind" style="width:14px; text-align:center; margin-right:4px;"></i>Szél: <span class="mono">${nightWindText}</span></p>
+                            <p><i class="fas fa-tint" style="width:14px; text-align:center; margin-right:4px;"></i>Pára: <span class="mono">${formatValue(day.nightPart.humidity, '%', 0)}</span></p>
                         </div>
                     </div>`;
                 }
@@ -589,10 +790,14 @@
             const weekSelector = document.getElementById('week-selector');
             if (!weekSelector || forecastDays.length === 0) return;
             weekSelector.innerHTML = '';
-            if (forecastDays.length > 0) weekSelector.add(new Option('Első 7 nap', '0'));
+            
+            if (forecastDays.length > 0) {
+                weekSelector.add(new Option('Első 7 nap', '0'));
+            }
             if (forecastDays.length > 7) {
                 const remainingDays = forecastDays.length - 7;
                 weekSelector.add(new Option(`Következő ${remainingDays} nap`, '7'));
+                weekSelector.add(new Option(`Összes nap (${forecastDays.length} nap)`, 'all'));
             }
         }
         
@@ -600,15 +805,22 @@
             const weekSelector = document.getElementById('week-selector');
             const forecastContainer = document.getElementById('forecast-container');
             const dateRangeDisplay = document.getElementById('date-range-display');
-            const startIndex = parseInt(weekSelector.value, 10);
-            const isFirstWeek = startIndex === 0;
+            const val = weekSelector.value;
+            
+            let daysToShow = [];
+            forecastContainer.classList.remove('eight-columns', 'all-days');
 
-            const daysToShow = isFirstWeek ? allForecastDays.slice(0, 7) : allForecastDays.slice(7);
-
-            if (isFirstWeek) {
-                forecastContainer.classList.remove('eight-columns');
+            if (val === 'all') {
+                daysToShow = allForecastDays;
+                forecastContainer.classList.add('all-days');
             } else {
-                forecastContainer.classList.add('eight-columns');
+                const startIndex = parseInt(val, 10);
+                const isFirstWeek = startIndex === 0;
+                daysToShow = isFirstWeek ? allForecastDays.slice(0, 7) : allForecastDays.slice(7);
+
+                if (!isFirstWeek) {
+                    forecastContainer.classList.add('eight-columns');
+                }
             }
             
             if (daysToShow.length > 0) {
@@ -632,10 +844,14 @@
                     populateWeekSelector(allForecastDays);
                     handleWeekChange();
                     updateDynamicSky(); 
-                } else { throw new Error("Sikertelen adatfeldolgozás."); }
+                } else { 
+                    throw new Error("Sikertelen Google Weather adatfeldolgozás."); 
+                }
             } catch (error) {
-                console.error("Hiba az időjárás adatok feldolgozása során:", error);
-                if(forecastContainerEl) forecastContainerEl.innerHTML = `<div class="loading-message">⚠️ Hiba történt az előrejelzés frissítése közben. Kérjük, próbálja meg később!</div>`;
+                console.error("Hiba az időjárási adatok feldolgozása közben:", error);
+                if (forecastContainerEl) {
+                    forecastContainerEl.innerHTML = `<div class="loading-message">⚠️ Hiba történt a Google Weather adatok frissítésekor. Kérjük, próbálja újra később!</div>`;
+                }
             }
         }
 
@@ -652,6 +868,7 @@
         function initApp() {
             document.getElementById('week-selector').addEventListener('change', handleWeekChange);
             fetchAndRenderWeather(); 
+            // 40 PERCES AUTOMATIKUS FRISSÍTÉS
             setInterval(fetchAndRenderWeather, REFRESH_INTERVAL_MS);
             setInterval(updateDynamicSky, 60 * 1000);
             scheduleMidnightRefresh();
